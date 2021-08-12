@@ -15,10 +15,10 @@ export class Restaurant {
   description: String;
 
   @Field((_) => [Order], { nullable: true })
-  orders?: [Order];
+  orders?: Order[];
 
   @Field((_) => [Meal], { nullable: true })
-  meals?: [Meal];
+  meals?: Meal[];
 
   @Field((_) => User)
   user: User;
