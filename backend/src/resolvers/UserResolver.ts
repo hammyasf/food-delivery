@@ -13,6 +13,7 @@ import { User } from "../entities/user";
 import { MyContext } from "../types";
 import argon2 from "argon2";
 import { createAccessToken, createRefreshToken } from "./../helpers/auth";
+import { sendRefreshToken } from "./../helpers/sendRefreshToken";
 import { isAuth } from "./../middlewares/isAuthMiddleware";
 
 @InputType()
@@ -144,7 +145,7 @@ export class UserResolver {
         };
       }
 
-      res.cookie("jid", createRefreshToken(user), { maxAge: 7 * 24 * 60 * 60 });
+      sendRefreshToken(res, createRefreshToken(user));
       return { user, accessToken: createAccessToken(user) };
     } else {
       return {
