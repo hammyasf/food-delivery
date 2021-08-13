@@ -1,3 +1,4 @@
+import { CTA } from "../components/CTA";
 import { useMeQuery } from "../generated/graphql";
 
 export function Home() {
@@ -20,7 +21,7 @@ export function Home() {
 
   return (
     <div>
-      <h1>Me: {data?.me?.username}</h1>
+      <CTA />
     </div>
   );
 }

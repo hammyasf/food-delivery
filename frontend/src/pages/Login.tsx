@@ -1,76 +1,38 @@
-import { Formik, Field, Form } from "formik";
-import { useHistory } from "react-router-dom";
-import * as yup from "yup";
-import { setAccessToken } from "../accessToken";
-import { MeDocument, MeQuery, useLoginMutation } from "../generated/graphql";
-
-const validationSchema = yup.object({
-  username: yup.string().required().min(3),
-  password: yup.string().required().min(8),
-});
+import {
+  Flex,
+  Heading,
+  Link,
+  Stack,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { Redirect } from "react-router-dom";
+import { LoginForm } from "../components/LoginForm";
+import { getIsAuthenticated } from "../utils/isAuthenticated";
 
 export function Login() {
-  const [login, { client }] = useLoginMutation();
-  const history = useHistory();
-
-  async function onSubmit(data: any, { setSubmitting }: any) {
-    setSubmitting(true);
-    const response = await login({
-      variables: {
-        username: data.username,
-        password: data.password,
-      },
-      update: (store, { data }) => {
-        if (!data || !data?.login?.user) {
-          return null;
-        }
-        store.writeQuery<MeQuery>({
-          query: MeDocument,
-          data: {
-            me: {
-              id: data.login.user.id,
-              username: data.login.user.username,
-              type: data.login.user.type,
-            },
-          },
-        });
-      },
-    });
-
-    if (response && response.data?.login.accessToken) {
-      setAccessToken(response.data.login.accessToken);
-    }
-
-    await client!.resetStore();
-
-    setSubmitting(false);
-
-    history.push("/");
+  const bgColor = useColorModeValue("gray.50", "gray.800");
+  if (getIsAuthenticated()) {
+    return <Redirect to="/" />;
   }
 
   return (
-    <div>
-      <Formik
-        initialValues={{ username: "", password: "" }}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      >
-        {({ values, isSubmitting, errors }) => (
-          <Form>
-            <Field name="username" type="input" placeholder="Username"></Field>
-            <Field
-              name="password"
-              type="password"
-              placeholder="Password"
-            ></Field>
-            <button disabled={isSubmitting} type="submit">
-              Login
-            </button>
-            <pre>{JSON.stringify(values, null, 2)}</pre>
-            <pre>{JSON.stringify(errors, null, 2)}</pre>
-          </Form>
-        )}
-      </Formik>
-    </div>
+    <Flex
+      height="100vh"
+      alignItems="center"
+      justifyContent="center"
+      bg={bgColor}
+    >
+      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+        <Stack align={"center"}>
+          <Heading fontSize={"4xl"}>Sign in to your account</Heading>
+          <Text fontSize={"lg"} color={"gray.600"}>
+            to start orderings from the best{" "}
+            <Link color={"blue.400"}>restaurants</Link>.
+          </Text>
+        </Stack>
+        <LoginForm />
+      </Stack>
+    </Flex>
   );
 }

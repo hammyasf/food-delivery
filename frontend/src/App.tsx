@@ -1,5 +1,6 @@
+import { ChakraProvider } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { setAccessToken } from "./accessToken";
+import { setAccessToken } from "./utils/accessToken";
 import { Routes } from "./Routes";
 
 export function App() {
@@ -23,5 +24,9 @@ export function App() {
     return <div>Loading...</div>;
   }
 
-  return <Routes />;
+  return (
+    <ChakraProvider>
+      <Routes />
+    </ChakraProvider>
+  );
 }

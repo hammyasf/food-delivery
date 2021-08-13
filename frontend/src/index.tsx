@@ -5,7 +5,7 @@ import { HttpLink } from "apollo-link-http";
 import { onError } from "apollo-link-error";
 import { ApolloLink, Observable } from "apollo-link";
 import { ApolloProvider } from "@apollo/react-hooks";
-import { getAccessToken, setAccessToken } from "./accessToken";
+import { getAccessToken, setAccessToken } from "./utils/accessToken";
 import { App } from "./App";
 import { TokenRefreshLink } from "apollo-link-token-refresh";
 import jwtDecode from "jwt-decode";
