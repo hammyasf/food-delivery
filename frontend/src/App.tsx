@@ -2,6 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { setAccessToken } from "./utils/accessToken";
 import { Routes } from "./Routes";
+import { setIsAuthenticated } from "./utils/isAuthenticated";
 
 export function App() {
   const [loading, setLoading] = useState(true);
@@ -14,6 +15,11 @@ export function App() {
       }).then(async (x) => {
         const { accessToken } = await x.json();
         setAccessToken(accessToken);
+        if (accessToken && accessToken !== "") {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
         setLoading(false);
       });
     }

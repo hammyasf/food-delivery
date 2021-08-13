@@ -16,9 +16,6 @@ import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { setAccessToken } from "../utils/accessToken";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
-import { useEffect } from "react";
-import { setIsAuthenticated } from "../utils/isAuthenticated";
-import { date } from "yup";
 
 function NavLink({ children, to }: { children: ReactNode; to: string }) {
   return (
@@ -41,10 +38,6 @@ function NavLink({ children, to }: { children: ReactNode; to: string }) {
 
 export function Navbar() {
   const { data } = useMeQuery();
-  useEffect(() => {
-    const authenticated: boolean = data && data.me ? true : false;
-    setIsAuthenticated(authenticated);
-  }, [data]);
   const { toggleColorMode, colorMode } = useColorMode();
   const [logout, { client }] = useLogoutMutation();
   return (
