@@ -15,6 +15,7 @@ import argon2 from "argon2";
 import { createAccessToken, createRefreshToken } from "./../helpers/auth";
 import { sendRefreshToken } from "./../helpers/sendRefreshToken";
 import { isAuth } from "./../middlewares/isAuthMiddleware";
+import { verify } from "jsonwebtoken";
 
 @InputType()
 class UsernamePasswordInput {
@@ -157,6 +158,34 @@ export class UserResolver {
         ],
       };
     }
+  }
+
+  @Mutation((_) => Boolean)
+  async logout(@Ctx() { res }: MyContext) {
+    sendRefreshToken(res, "");
+
+    return true;
+  }
+
+  @Query(() => User, { nullable: true })
+  me(@Ctx() context: MyContext) {
+    const authorization = context.req.headers["authorization"];
+
+    if (!authorization) {
+      return null;
+    }
+
+    try {
+      const token = authorization?.split(" ")[1];
+      const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+      context.payload = payload as any;
+      return context.prisma.user.findUnique({ where: { id: payload.userId } });
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+
+    return null;
   }
 
   @Query((_) => User)

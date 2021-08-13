@@ -12,11 +12,16 @@ const type_graphql_1 = require("type-graphql");
 const UserResolver_1 = require("./resolvers/UserResolver");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const jsonwebtoken_1 = require("jsonwebtoken");
+const cors_1 = __importDefault(require("cors"));
 const auth_1 = require("./helpers/auth");
 const sendRefreshToken_1 = require("./helpers/sendRefreshToken");
 const prisma = new client_1.PrismaClient();
 async function main() {
     const app = express_1.default();
+    app.use(cors_1.default({
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+    }));
     app.use(cookie_parser_1.default());
     app.post("/refresh_token", async (req, res) => {
         const token = req.cookies.jid;
@@ -54,7 +59,7 @@ async function main() {
             res,
         }),
     });
-    apolloServer.applyMiddleware({ app });
+    apolloServer.applyMiddleware({ app, cors: false });
     app.listen(4000, () => {
         console.log("Server Started At http://localhost:4000");
     });

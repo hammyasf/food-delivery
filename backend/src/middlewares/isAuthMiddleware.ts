@@ -15,7 +15,7 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
     context.payload = payload as any;
   } catch (err) {
     console.log(err);
-    throw new Error("not authenticated");
+    throw new Error("Not Authenticated");
   }
 
   return next();

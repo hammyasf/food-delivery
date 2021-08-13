@@ -8,6 +8,7 @@ import { UserResolver } from "./resolvers/UserResolver";
 import { MyContext } from "./types";
 import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
+import cors from "cors";
 import { createAccessToken, createRefreshToken } from "./helpers/auth";
 import { sendRefreshToken } from "./helpers/sendRefreshToken";
 
@@ -15,6 +16,13 @@ const prisma = new PrismaClient();
 
 async function main() {
   const app = express();
+
+  app.use(
+    cors({
+      origin: process.env.FRONTEND_URL!,
+      credentials: true,
+    })
+  );
 
   app.use(cookieParser());
 
@@ -63,7 +71,7 @@ async function main() {
     }),
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(4000, () => {
     console.log("Server Started At http://localhost:4000");
