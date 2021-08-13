@@ -1,6 +1,6 @@
 # Food Delivery Web App
 
-### Project Requirements
+## Project Requirements
 
 - User must be able to create an account and log in.
 - Implment 2 roles with different permission levels.
@@ -30,3 +30,13 @@
 - Make sure it's a single-page application. All actions need to be client-side using AJAX, refreshing the page is not acceptable.
 - Functional UI/UX design is needed. (A framework can be used)
 - `BONUS:` **UNIT & E2E Tests.**
+
+---
+
+## Backend
+
+### Technical Features
+
+- GraphQL API (using Apollo and Express)
+- Multi-Database (using Prisma)
+- Typescript
