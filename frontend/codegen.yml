@@ -10,4 +10,5 @@ generates:
     config:
       withHOC: false
       withComponent: false
-      withHooks: true
+      withHook: true
+      apolloReactHooksImportFrom: "@apollo/react-hooks"

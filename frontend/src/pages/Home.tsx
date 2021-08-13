@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { useCurrentUserQuery } from "../generated/graphql";
 
 interface Props {}
 
 export function Home() {
-  return <div>Home</div>;
+  const user = useCurrentUserQuery();
+  return <div>{console.log(user)}Home</div>;
 }

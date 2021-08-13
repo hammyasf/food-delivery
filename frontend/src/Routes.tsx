@@ -12,9 +12,9 @@ export function Routes() {
         <Link to="/login">Login</Link>
       </div>
       <Switch>
-        <Route exact path="/" render={Home} />
-        <Route exact path="/register" render={Register} />
-        <Route exact path="/login" render={Login} />
+        <Route exact path="/" render={() => <Home></Home>} />
+        <Route exact path="/register" render={() => <Register></Register>} />
+        <Route exact path="/login" render={() => <Login></Login>} />
       </Switch>
     </BrowserRouter>
   );
