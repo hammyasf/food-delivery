@@ -1,0 +1,26 @@
+query currentUser {
+  currentUser {
+    id
+    username
+    type
+    orders {
+      statuses {
+        status
+      }
+      meals {
+        meal {
+          name
+          price
+        }
+      }
+    }
+    restaurants {
+      name
+      description
+      meals {
+        name
+        price
+      }
+    }
+  }
+}

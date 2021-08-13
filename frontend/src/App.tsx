@@ -1,23 +1,41 @@
-import "./App.css";
+import { useQuery } from "@apollo/react-hooks";
+import { gql } from "apollo-boost";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const { data, loading } = useQuery(gql`
+    {
+      currentUser {
+        id
+        username
+        type
+        orders {
+          statuses {
+            status
+          }
+          meals {
+            meal {
+              name
+              price
+            }
+          }
+        }
+        restaurants {
+          name
+          description
+          meals {
+            name
+            price
+          }
+        }
+      }
+    }
+  `);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return <div>{data}</div>;
 }
 
 export default App;
