@@ -19,6 +19,7 @@ model User {
   username String   @db.VarChar(255) @unique
   password String
   type     UserType @default(USER)
+  tokenVersion Int @default(0)
 
   orders      Order[]
   restaurants Restaurant[]

@@ -12,6 +12,8 @@ export class User {
 
   password: string;
 
+  tokenVersion: number;
+
   @Field((_) => String)
   type: "USER" | "RESTAURANT_OWNER" | "SUPERUSER";
 
