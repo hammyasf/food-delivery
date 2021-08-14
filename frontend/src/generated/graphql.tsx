@@ -84,6 +84,12 @@ export type Query = {
   me?: Maybe<User>;
   currentUser: User;
   restaurants?: Maybe<Array<Restaurant>>;
+  restaurant?: Maybe<Restaurant>;
+};
+
+
+export type QueryRestaurantArgs = {
+  id: Scalars['Float'];
 };
 
 export type Restaurant = {
@@ -152,10 +158,17 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string, type: string }> } };
 
+export type RestaurantQueryVariables = Exact<{
+  id: Scalars['Float'];
+}>;
+
+
+export type RestaurantQuery = { __typename?: 'Query', restaurant?: Maybe<{ __typename?: 'Restaurant', id: number, name: string, description: string, user: { __typename?: 'User', id: number }, meals?: Maybe<Array<{ __typename?: 'Meal', name: string, description: string, price: number }>> }> };
+
 export type RestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RestaurantsQuery = { __typename?: 'Query', restaurants?: Maybe<Array<{ __typename?: 'Restaurant', id: number, name: string, description: string }>> };
+export type RestaurantsQuery = { __typename?: 'Query', restaurants?: Maybe<Array<{ __typename?: 'Restaurant', id: number, name: string, description: string, meals?: Maybe<Array<{ __typename?: 'Meal', id: number, name: string, description: string, price: number }>> }>> };
 
 
 export const CurrentUserDocument = gql`
@@ -364,12 +377,63 @@ export function useRegisterMutation(baseOptions?: ApolloReactHooks.MutationHookO
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const RestaurantDocument = gql`
+    query Restaurant($id: Float!) {
+  restaurant(id: $id) {
+    id
+    name
+    description
+    user {
+      id
+    }
+    meals {
+      name
+      description
+      price
+    }
+  }
+}
+    `;
+
+/**
+ * __useRestaurantQuery__
+ *
+ * To run a query within a React component, call `useRestaurantQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRestaurantQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRestaurantQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useRestaurantQuery(baseOptions: ApolloReactHooks.QueryHookOptions<RestaurantQuery, RestaurantQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<RestaurantQuery, RestaurantQueryVariables>(RestaurantDocument, options);
+      }
+export function useRestaurantLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RestaurantQuery, RestaurantQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<RestaurantQuery, RestaurantQueryVariables>(RestaurantDocument, options);
+        }
+export type RestaurantQueryHookResult = ReturnType<typeof useRestaurantQuery>;
+export type RestaurantLazyQueryHookResult = ReturnType<typeof useRestaurantLazyQuery>;
+export type RestaurantQueryResult = Apollo.QueryResult<RestaurantQuery, RestaurantQueryVariables>;
 export const RestaurantsDocument = gql`
     query Restaurants {
   restaurants {
     id
     name
     description
+    meals {
+      id
+      name
+      description
+      price
+    }
   }
 }
     `;

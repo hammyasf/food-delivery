@@ -1,4 +1,5 @@
 import { Box, chakra, Grid, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 import { Card } from "../components/Card";
 import { useRestaurantsQuery } from "../generated/graphql";
 
@@ -35,11 +36,12 @@ export function Restaurants() {
         autoRows="auto"
       >
         {data?.restaurants?.map((restaurant) => (
-          <Card
-            key={restaurant.id}
-            title={restaurant.name}
-            description={restaurant.description}
-          />
+          <Link to={`/restaurants/${restaurant.id}`} key={restaurant.id}>
+            <Card
+              title={restaurant.name}
+              description={restaurant.description}
+            />
+          </Link>
         ))}
       </Grid>
     </VStack>

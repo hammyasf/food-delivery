@@ -60,7 +60,12 @@ export function Navbar() {
                   aria-label={"Show Dropdown Menu"}
                   size={"md"}
                 >
-                  <ChevronDownIcon />
+                  <IconButton
+                    icon={<ChevronDownIcon />}
+                    aria-label={"Show Dropdown Menu"}
+                    size={"md"}
+                    as={Box}
+                  />
                 </MenuButton>
                 <MenuList>
                   <MenuItem as={Link} to="/restaurants">
