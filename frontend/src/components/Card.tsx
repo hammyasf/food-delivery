@@ -5,9 +5,16 @@ interface Props {
   description: string;
   price?: number;
   buttonText?: string;
+  onButtonClick?: Function;
 }
 
-export function Card({ title, description, price, buttonText }: Props) {
+export function Card({
+  title,
+  description,
+  price,
+  buttonText,
+  onButtonClick,
+}: Props) {
   const priceColor = useColorModeValue("gray.800", "white");
   return (
     <Flex
@@ -40,7 +47,7 @@ export function Card({ title, description, price, buttonText }: Props) {
         >
           {description}
         </chakra.p>
-        {price && buttonText ? (
+        {price && buttonText && onButtonClick ? (
           <Flex mt={3} alignItems="center" justifyContent="space-between">
             <chakra.h1 color={priceColor} fontWeight="bold" fontSize="lg">
               ${price}
@@ -60,6 +67,8 @@ export function Card({ title, description, price, buttonText }: Props) {
               _focus={{
                 bg: "gray.400",
               }}
+              //@ts-ignore
+              onClick={onButtonClick}
             >
               {buttonText}
             </chakra.button>

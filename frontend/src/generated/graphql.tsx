@@ -163,7 +163,7 @@ export type RestaurantQueryVariables = Exact<{
 }>;
 
 
-export type RestaurantQuery = { __typename?: 'Query', restaurant?: Maybe<{ __typename?: 'Restaurant', id: number, name: string, description: string, user: { __typename?: 'User', id: number }, meals?: Maybe<Array<{ __typename?: 'Meal', name: string, description: string, price: number }>> }> };
+export type RestaurantQuery = { __typename?: 'Query', restaurant?: Maybe<{ __typename?: 'Restaurant', id: number, name: string, description: string, user: { __typename?: 'User', id: number }, meals?: Maybe<Array<{ __typename?: 'Meal', id: number, name: string, description: string, price: number }>> }> };
 
 export type RestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -387,6 +387,7 @@ export const RestaurantDocument = gql`
       id
     }
     meals {
+      id
       name
       description
       price
