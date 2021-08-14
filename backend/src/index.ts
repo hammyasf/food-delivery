@@ -11,6 +11,7 @@ import { verify } from "jsonwebtoken";
 import cors from "cors";
 import { createAccessToken, createRefreshToken } from "./helpers/auth";
 import { sendRefreshToken } from "./helpers/sendRefreshToken";
+import { RestaurantResolver } from "./resolvers/RestaurantResolver";
 
 const prisma = new PrismaClient();
 
@@ -61,7 +62,7 @@ async function main() {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, RestaurantResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({

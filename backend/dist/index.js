@@ -15,6 +15,7 @@ const jsonwebtoken_1 = require("jsonwebtoken");
 const cors_1 = __importDefault(require("cors"));
 const auth_1 = require("./helpers/auth");
 const sendRefreshToken_1 = require("./helpers/sendRefreshToken");
+const RestaurantResolver_1 = require("./resolvers/RestaurantResolver");
 const prisma = new client_1.PrismaClient();
 async function main() {
     const app = express_1.default();
@@ -50,7 +51,7 @@ async function main() {
     });
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: await type_graphql_1.buildSchema({
-            resolvers: [UserResolver_1.UserResolver],
+            resolvers: [UserResolver_1.UserResolver, RestaurantResolver_1.RestaurantResolver],
             validate: false,
         }),
         context: ({ req, res }) => ({
