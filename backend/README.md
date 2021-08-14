@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to Food Delivery App Frontend 👋</h1>
+<h1 align="center">Welcome to Food Delivery App Backend 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
   <a href="http://localhost:4000/graphql" target="_blank">
@@ -12,7 +12,7 @@
   </a>
 </p>
 
-> Food Ordering App, Made using React, Chakra UI and Apollo Client
+> GraphQL Backend for Food Ordering App, Made using Apollo, Prisma, PostgreSQL and Express
 
 ### 🏠 [Homepage](http://localhost:4000)
 
@@ -25,7 +25,7 @@ yarn install
 ## Usage
 
 ```sh
-yarn build
+yarn build && yarn start
 ```
 
 ## Run tests
