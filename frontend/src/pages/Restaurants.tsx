@@ -1,12 +1,4 @@
-import {
-  Box,
-  chakra,
-  Flex,
-  Grid,
-  Heading,
-  useColorModeValue,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, chakra, Grid, useColorModeValue, VStack } from "@chakra-ui/react";
 import { Card } from "../components/Card";
 import { useRestaurantsQuery } from "../generated/graphql";
 
@@ -34,7 +26,12 @@ export function Restaurants() {
         p={30}
         w={"full"}
         gap={6}
-        templateColumns="repeat(3, 1fr)"
+        templateColumns={{
+          base: "repeat(1, 1fr)",
+          sm: "repeat(2, 1fr)",
+          md: "repeat(3, 1fr)",
+          lg: "repeat(4, 1fr)",
+        }}
         autoRows="auto"
       >
         {data?.restaurants?.map((restaurant) => (
@@ -42,8 +39,6 @@ export function Restaurants() {
             key={restaurant.id}
             title={restaurant.name}
             description={restaurant.description}
-            price={100}
-            buttonText="Explore Now"
           />
         ))}
       </Grid>

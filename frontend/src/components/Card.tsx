@@ -1,20 +1,18 @@
 import { Box, chakra, Flex, useColorModeValue } from "@chakra-ui/react";
 
 interface Props {
-  key: React.Key;
   title: string;
   description: string;
   price?: number;
   buttonText?: string;
 }
 
-export function Card({ key, title, description, price, buttonText }: Props) {
+export function Card({ title, description, price, buttonText }: Props) {
   const priceColor = useColorModeValue("gray.800", "white");
   return (
     <Flex
       width="full"
       maxW={"md"}
-      mx="auto"
       bg={useColorModeValue("white", "gray.800")}
       shadow="lg"
       rounded="lg"
@@ -24,7 +22,7 @@ export function Card({ key, title, description, price, buttonText }: Props) {
       <Box
         w={1 / 3}
         bgSize="cover"
-        style={{ backgroundImage: `url('https://picsum.photos/256?${key}')` }}
+        style={{ backgroundImage: `url('https://picsum.photos/256?${title}')` }}
       ></Box>
 
       <Box w={2 / 3} p={{ base: 4, md: 4 }}>

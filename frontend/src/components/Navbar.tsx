@@ -45,7 +45,7 @@ export function Navbar() {
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <HStack spacing={8} alignItems={"center"}>
-            <Box as={Link} to="/">
+            <Box as={Link} to="/" fontSize="lg" fontWeight="bold">
               Food Delivery
             </Box>
           </HStack>
@@ -57,18 +57,18 @@ export function Navbar() {
                   variant={"link"}
                   cursor={"pointer"}
                   minW={0}
+                  aria-label={"Show Dropdown Menu"}
+                  size={"md"}
                 >
-                  <IconButton
-                    size={"md"}
-                    icon={<ChevronDownIcon />}
-                    aria-label={"Show Dropdown Menu"}
-                  />
+                  <ChevronDownIcon />
                 </MenuButton>
                 <MenuList>
                   <MenuItem as={Link} to="/restaurants">
                     Restaurants
                   </MenuItem>
-                  <MenuItem>Orders</MenuItem>
+                  <MenuItem as={Link} to="/orders">
+                    Orders
+                  </MenuItem>
                   <MenuItem
                     onClick={async () => {
                       await logout();

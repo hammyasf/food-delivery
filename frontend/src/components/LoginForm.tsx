@@ -1,10 +1,8 @@
 import {
   Box,
   Button,
-  Flex,
   FormControl,
   FormLabel,
-  Heading,
   Input,
   Stack,
   useColorModeValue,

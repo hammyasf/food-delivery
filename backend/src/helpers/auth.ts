@@ -1,5 +1,6 @@
 import { User } from "../entities/User";
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
+import { MyContext } from "src/types";
 
 export function createAccessToken(user: User) {
   return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
@@ -15,4 +16,29 @@ export function createRefreshToken(user: User) {
       expiresIn: "30d",
     }
   );
+}
+
+export async function getAuthUser({
+  context,
+}: {
+  context: MyContext;
+}): Promise<User | null> {
+  const authorization = context.req.headers["authorization"];
+
+  if (!authorization) {
+    return null;
+  }
+
+  try {
+    const token = authorization?.split(" ")[1];
+    const payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+    context.payload = payload as any;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+
+  return await context.prisma.user.findUnique({
+    where: { id: parseInt(context.payload!.userId) },
+  });
 }
