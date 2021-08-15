@@ -1,5 +1,15 @@
-mutation Register($username: String!, $password: String!) {
-  register(options: { username: $username, password: $password }) {
+mutation Register(
+  $username: String!
+  $password: String!
+  $restaurant: Boolean!
+) {
+  register(
+    options: {
+      username: $username
+      password: $password
+      restaurant: $restaurant
+    }
+  ) {
     errors {
       field
       message

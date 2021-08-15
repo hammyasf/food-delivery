@@ -1,5 +1,7 @@
-mutation PlaceOrder($meals: [Float!]!, $restaurantId: Float!) {
-  placeOrder(options: { meals: $meals, restaurantId: $restaurantId }) {
+mutation PlaceOrder($meals: [Float!]!, $restaurantId: Float!, $total: Float!) {
+  placeOrder(
+    options: { meals: $meals, restaurantId: $restaurantId, total: $total }
+  ) {
     id
   }
 }

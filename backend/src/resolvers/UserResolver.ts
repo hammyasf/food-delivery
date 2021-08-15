@@ -25,6 +25,16 @@ class UsernamePasswordInput {
   password: string;
 }
 
+@InputType()
+class UsernamePasswordTypeInput {
+  @Field()
+  username: string;
+  @Field()
+  password: string;
+  @Field()
+  restaurant: boolean;
+}
+
 @ObjectType()
 class FieldError {
   @Field()
@@ -49,7 +59,7 @@ class UserResponse {
 export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg("options") options: UsernamePasswordTypeInput,
     @Ctx() { prisma }: MyContext
   ): Promise<UserResponse> {
     if (options.username.length <= 2) {
@@ -90,10 +100,13 @@ export class UserResolver {
       };
     }
 
+    const user_type = options.restaurant ? "RESTAURANT_OWNER" : "USER";
+
     const user = await prisma.user.create({
       data: {
         username: options.username.toLowerCase(),
         password: hashedPassword,
+        type: user_type,
       },
     });
 

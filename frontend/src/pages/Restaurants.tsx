@@ -1,11 +1,18 @@
 import { Box, chakra, Grid, useColorModeValue, VStack } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { Card } from "../components/Card";
-import { useRestaurantsQuery } from "../generated/graphql";
+import { useMeQuery, useRestaurantsQuery } from "../generated/graphql";
 
 export function Restaurants() {
   const { data, loading, error } = useRestaurantsQuery();
+
   const bgValue = useColorModeValue("#F9FAFB", "gray.600");
+
+  const { data: user } = useMeQuery();
+
+  if (!user?.me) {
+    return <Redirect to="/" />;
+  }
 
   if (loading) {
     return <div>Loading</div>;

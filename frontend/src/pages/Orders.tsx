@@ -28,7 +28,7 @@ export function Orders() {
   const { page }: { page: string } = useParams();
   const { data, loading, refetch } = useOrdersQuery({
     fetchPolicy: "network-only",
-    pollInterval: 5000,
+    pollInterval: 2500,
     variables: {
       page: parseInt(page),
       perPage: 5,
@@ -37,6 +37,12 @@ export function Orders() {
   const { data: currentUser } = useMeQuery();
   const bgColor = useColorModeValue("gray.300", "gray.500");
   const bgColor2 = useColorModeValue("white", "gray.900");
+
+  const { data: user } = useMeQuery();
+
+  if (!user?.me) {
+    return <Redirect to="/" />;
+  }
 
   if (!page) {
     return <Redirect to="/orders/1" />;
@@ -66,6 +72,7 @@ export function Orders() {
               <Th>Order ID</Th>
               <Th>Meals</Th>
               <Th>Restaurant</Th>
+              <Th>Total Cost</Th>
               <Th>Status</Th>
               <Th>Actions</Th>
             </Tr>
@@ -101,6 +108,9 @@ export function Orders() {
                   </Stack>
                 </Td>
                 <Td>{order.restaurant.name}</Td>
+                <Td>
+                  <Tag colorScheme="green">${order.total}</Tag>
+                </Td>
                 <Td>
                   {order.statuses!.length > 0 ? (
                     <Tag

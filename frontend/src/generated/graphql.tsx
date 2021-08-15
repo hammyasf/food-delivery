@@ -55,7 +55,7 @@ export type Mutation = {
 
 
 export type MutationRegisterArgs = {
-  options: UsernamePasswordInput;
+  options: UsernamePasswordTypeInput;
 };
 
 
@@ -85,6 +85,7 @@ export type Order = {
   restaurant: Restaurant;
   statuses?: Maybe<Array<OrderStatus>>;
   meals?: Maybe<Array<MealsOnOrder>>;
+  total: Scalars['Float'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
 };
@@ -92,6 +93,7 @@ export type Order = {
 export type OrderMeals = {
   meals: Array<Scalars['Float']>;
   restaurantId: Scalars['Float'];
+  total: Scalars['Float'];
 };
 
 export type OrderStatus = {
@@ -135,6 +137,7 @@ export type Restaurant = {
   orders?: Maybe<Array<Order>>;
   meals?: Maybe<Array<Meal>>;
   user: User;
+  blockedUser?: Maybe<Array<User>>;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
 };
@@ -151,6 +154,7 @@ export type User = {
   type: Scalars['String'];
   orders?: Maybe<Array<Order>>;
   restaurants?: Maybe<Array<Restaurant>>;
+  blockedBy?: Maybe<Array<Restaurant>>;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
 };
@@ -165,6 +169,12 @@ export type UserResponse = {
 export type UsernamePasswordInput = {
   username: Scalars['String'];
   password: Scalars['String'];
+};
+
+export type UsernamePasswordTypeInput = {
+  username: Scalars['String'];
+  password: Scalars['String'];
+  restaurant: Scalars['Boolean'];
 };
 
 export type CancelOrderMutationVariables = Exact<{
@@ -208,11 +218,12 @@ export type OrdersQueryVariables = Exact<{
 }>;
 
 
-export type OrdersQuery = { __typename?: 'Query', orders?: Maybe<Array<{ __typename?: 'Order', id: number, createdAt: any, statuses?: Maybe<Array<{ __typename?: 'OrderStatus', status: string, createdAt: any }>>, meals?: Maybe<Array<{ __typename?: 'MealsOnOrder', quantity: number, meal?: Maybe<{ __typename?: 'Meal', name: string, price: number }> }>>, restaurant: { __typename?: 'Restaurant', id: number, name: string, description: string } }>> };
+export type OrdersQuery = { __typename?: 'Query', orders?: Maybe<Array<{ __typename?: 'Order', id: number, total: number, createdAt: any, statuses?: Maybe<Array<{ __typename?: 'OrderStatus', status: string, createdAt: any }>>, meals?: Maybe<Array<{ __typename?: 'MealsOnOrder', quantity: number, meal?: Maybe<{ __typename?: 'Meal', name: string, price: number }> }>>, restaurant: { __typename?: 'Restaurant', id: number, name: string, description: string } }>> };
 
 export type PlaceOrderMutationVariables = Exact<{
   meals: Array<Scalars['Float']> | Scalars['Float'];
   restaurantId: Scalars['Float'];
+  total: Scalars['Float'];
 }>;
 
 
@@ -221,6 +232,7 @@ export type PlaceOrderMutation = { __typename?: 'Mutation', placeOrder?: Maybe<{
 export type RegisterMutationVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
+  restaurant: Scalars['Boolean'];
 }>;
 
 
@@ -483,6 +495,7 @@ export const OrdersDocument = gql`
     query Orders($page: Float!, $perPage: Float!) {
   orders(options: {page: $page, perPage: $perPage}) {
     id
+    total
     createdAt
     statuses {
       status
@@ -533,8 +546,8 @@ export type OrdersQueryHookResult = ReturnType<typeof useOrdersQuery>;
 export type OrdersLazyQueryHookResult = ReturnType<typeof useOrdersLazyQuery>;
 export type OrdersQueryResult = Apollo.QueryResult<OrdersQuery, OrdersQueryVariables>;
 export const PlaceOrderDocument = gql`
-    mutation PlaceOrder($meals: [Float!]!, $restaurantId: Float!) {
-  placeOrder(options: {meals: $meals, restaurantId: $restaurantId}) {
+    mutation PlaceOrder($meals: [Float!]!, $restaurantId: Float!, $total: Float!) {
+  placeOrder(options: {meals: $meals, restaurantId: $restaurantId, total: $total}) {
     id
   }
 }
@@ -556,6 +569,7 @@ export type PlaceOrderMutationFn = Apollo.MutationFunction<PlaceOrderMutation, P
  *   variables: {
  *      meals: // value for 'meals'
  *      restaurantId: // value for 'restaurantId'
+ *      total: // value for 'total'
  *   },
  * });
  */
@@ -567,8 +581,10 @@ export type PlaceOrderMutationHookResult = ReturnType<typeof usePlaceOrderMutati
 export type PlaceOrderMutationResult = Apollo.MutationResult<PlaceOrderMutation>;
 export type PlaceOrderMutationOptions = Apollo.BaseMutationOptions<PlaceOrderMutation, PlaceOrderMutationVariables>;
 export const RegisterDocument = gql`
-    mutation Register($username: String!, $password: String!) {
-  register(options: {username: $username, password: $password}) {
+    mutation Register($username: String!, $password: String!, $restaurant: Boolean!) {
+  register(
+    options: {username: $username, password: $password, restaurant: $restaurant}
+  ) {
     errors {
       field
       message
@@ -598,6 +614,7 @@ export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, Regis
  *   variables: {
  *      username: // value for 'username'
  *      password: // value for 'password'
+ *      restaurant: // value for 'restaurant'
  *   },
  * });
  */

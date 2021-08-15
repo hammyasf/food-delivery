@@ -12,6 +12,7 @@ import { Redirect, useParams } from "react-router-dom";
 import { Card } from "../components/Card";
 import { CartItem } from "../components/CartItem";
 import {
+  useMeQuery,
   usePlaceOrderMutation,
   useRestaurantQuery,
 } from "./../generated/graphql";
@@ -28,6 +29,21 @@ export function Restaurant() {
   const [cartCost, setCartCost] = useState(0);
   const [hasOrdered, setHasOrdered] = useState(false);
 
+  const { data: user } = useMeQuery();
+
+  useEffect(() => {
+    let total_cost = 0;
+
+    cart.forEach((c: any) => {
+      total_cost += c.price;
+    });
+    setCartCost(total_cost);
+  }, [cart]);
+
+  if (!user?.me) {
+    return <Redirect to="/" />;
+  }
+
   function removeItem(e: any) {
     let array = [...cart];
     let index = array.indexOf(e);
@@ -40,19 +56,14 @@ export function Restaurant() {
   async function makeOrder() {
     const meals = cart.map((c: any) => c.id);
     await placeOrder({
-      variables: { meals: meals, restaurantId: data!.restaurant!.id },
+      variables: {
+        meals: meals,
+        restaurantId: data!.restaurant!.id,
+        total: cartCost,
+      },
     });
     setHasOrdered(true);
   }
-
-  useEffect(() => {
-    let total_cost = 0;
-
-    cart.forEach((c: any) => {
-      total_cost += c.price;
-    });
-    setCartCost(total_cost);
-  }, [cart]);
 
   if (hasOrdered) {
     return <Redirect to="/orders" />;

@@ -27,6 +27,9 @@ class OrderMeals {
 
   @Field(() => Float)
   restaurantId: number;
+
+  @Field(() => Float)
+  total: number;
 }
 
 @InputType()
@@ -189,6 +192,7 @@ export class OrderResolver {
       data: {
         restaurantId: options.restaurantId,
         userId: user!.id,
+        total: options.total,
         statuses: {
           create: { status: "PLACED" },
         },

@@ -1,6 +1,7 @@
 query Orders($page: Float!, $perPage: Float!) {
   orders(options: { page: $page, perPage: $perPage }) {
     id
+    total
     createdAt
     statuses {
       status

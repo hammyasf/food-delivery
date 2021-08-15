@@ -1,59 +1,41 @@
-import { Formik, Field, Form } from "formik";
-import * as yup from "yup";
-import { useRegisterMutation } from "../generated/graphql";
-
-const validationSchema = yup.object({
-  username: yup.string().required().min(3),
-  password: yup.string().required().min(8),
-  confirm_password: yup
-    .string()
-    .required()
-    .oneOf([yup.ref("password"), null]),
-});
+import {
+  Flex,
+  Heading,
+  Link,
+  Stack,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { Redirect } from "react-router-dom";
+import { LoginForm } from "../components/LoginForm";
+import { RegisterForm } from "../components/RegisterForm";
+import { useMeQuery } from "../generated/graphql";
+import { getIsAuthenticated } from "../utils/isAuthenticated";
 
 export function Register() {
-  const [register] = useRegisterMutation();
-
-  async function onSubmit(data: any, { setSubmitting }: any) {
-    setSubmitting(true);
-    const response = await register({
-      variables: {
-        username: data.username,
-        password: data.password,
-      },
-    });
-    console.log({ response });
-    setSubmitting(false);
+  const bgColor = useColorModeValue("gray.50", "gray.800");
+  const { data } = useMeQuery();
+  if (data?.me) {
+    return <Redirect to="/" />;
   }
 
   return (
-    <div>
-      <Formik
-        initialValues={{ username: "", password: "", confirm_password: "" }}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      >
-        {({ values, isSubmitting, errors }) => (
-          <Form>
-            <Field name="username" type="input" placeholder="Username"></Field>
-            <Field
-              name="password"
-              type="password"
-              placeholder="Password"
-            ></Field>
-            <Field
-              name="confirm_password"
-              type="password"
-              placeholder="Confirm Password"
-            ></Field>
-            <button disabled={isSubmitting} type="submit">
-              Register
-            </button>
-            <pre>{JSON.stringify(values, null, 2)}</pre>
-            <pre>{JSON.stringify(errors, null, 2)}</pre>
-          </Form>
-        )}
-      </Formik>
-    </div>
+    <Flex
+      height="100vh"
+      alignItems="center"
+      justifyContent="center"
+      bg={bgColor}
+    >
+      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+        <Stack align={"center"}>
+          <Heading fontSize={"4xl"}>Register for a new account</Heading>
+          <Text fontSize={"lg"} color={"gray.600"}>
+            to start orderings from the best{" "}
+            <Link color={"blue.400"}>restaurants</Link>.
+          </Text>
+        </Stack>
+        <RegisterForm />
+      </Stack>
+    </Flex>
   );
 }
