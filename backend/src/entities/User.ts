@@ -23,6 +23,9 @@ export class User {
   @Field((_) => [Restaurant], { nullable: true })
   restaurants?: Restaurant[];
 
+  @Field((_) => [Restaurant], { nullable: true })
+  blockedBy?: Restaurant[];
+
   @Field()
   createdAt: Date;
 

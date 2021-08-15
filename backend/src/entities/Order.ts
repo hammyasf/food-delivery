@@ -21,6 +21,9 @@ export class Order {
   @Field((_) => [MealsOnOrder], { nullable: true })
   meals: MealsOnOrder[];
 
+  @Field()
+  total: number;
+
   userId: number;
   restaurantId: number;
 

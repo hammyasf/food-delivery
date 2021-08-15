@@ -24,6 +24,8 @@ model User {
   orders      Order[]
   restaurants Restaurant[]
 
+  blockedBy UserOnRestaurant[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -44,6 +46,8 @@ model Restaurant {
 
   orders Order[]
   meals  Meal[]
+
+  blockedUser UserOnRestaurant[]
 
   user User @relation(fields: [userId], references: [id])
 
@@ -82,6 +86,8 @@ model Order {
 
   userId       Int
   restaurantId Int
+
+  total Float @default(0)
 
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -123,4 +129,15 @@ model MealsOnOrder {
   quantity Int @default(1)
 
   @@id([orderId, mealId])
+}
+
+// Many to Many For Blocking
+model UserOnRestaurant {
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+
+  @@id([userId, restaurantId])
 }

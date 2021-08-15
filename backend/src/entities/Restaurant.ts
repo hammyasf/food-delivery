@@ -23,6 +23,9 @@ export class Restaurant {
   @Field((_) => User)
   user: User;
 
+  @Field((_) => [User], { nullable: true })
+  blockedUser?: User[];
+
   userId: number;
 
   @Field()
