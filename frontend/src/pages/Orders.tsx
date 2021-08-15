@@ -16,14 +16,13 @@ import {
   useColorModeValue,
   Stack,
   IconButton,
-  VStack,
   Flex,
-  Divider,
 } from "@chakra-ui/react";
 import { useParams, Link, Redirect } from "react-router-dom";
 import { OrderTableCancelButton } from "../components/OrderTableCancelButton";
+import { OrderTableUpdateButton } from "../components/OrderTableUpdateButton";
 import { getStatusColor } from "../constants/statusColors";
-import { useOrdersQuery } from "../generated/graphql";
+import { useMeQuery, useOrdersQuery } from "../generated/graphql";
 
 export function Orders() {
   const { page }: { page: string } = useParams();
@@ -35,6 +34,7 @@ export function Orders() {
       perPage: 5,
     },
   });
+  const { data: currentUser } = useMeQuery();
   const bgColor = useColorModeValue("gray.300", "gray.500");
   const bgColor2 = useColorModeValue("white", "gray.900");
 
@@ -114,13 +114,27 @@ export function Orders() {
                   )}
                 </Td>
                 {order.statuses!.length > 0 ? (
-                  order.statuses![0].status === "PLACED" ? (
+                  order.statuses![0].status === "PLACED" &&
+                  currentUser?.me?.type === "USER" ? (
                     <Td>
                       <OrderTableCancelButton
                         onClick={() =>
                           refetch({ page: parseInt(page), perPage: 5 })
                         }
                         id={order.id}
+                      />
+                    </Td>
+                  ) : order.statuses![0].status !== "CANCELED" &&
+                    order.statuses![0].status !== "RECEIVED" &&
+                    currentUser?.me?.type === "RESTAURANT_OWNER" ? (
+                    <Td>
+                      <OrderTableUpdateButton
+                        id={order.id}
+                        onClick={() =>
+                          refetch({ page: parseInt(page), perPage: 5 })
+                        }
+                        //@ts-ignore
+                        current_status={order!.statuses[0]!.status}
                       />
                     </Td>
                   ) : (

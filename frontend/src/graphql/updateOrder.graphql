@@ -1,0 +1,5 @@
+mutation UpdateOrder($id: Float!) {
+  updateOrder(id: $id) {
+    id
+  }
+}

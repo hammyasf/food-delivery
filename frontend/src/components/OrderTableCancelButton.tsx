@@ -12,6 +12,7 @@ export function OrderTableCancelButton({ onClick, id }: Props) {
 
   return (
     <Button
+      size="sm"
       leftIcon={<DeleteIcon />}
       colorScheme={"red"}
       variant="outline"

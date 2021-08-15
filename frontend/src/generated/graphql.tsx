@@ -49,6 +49,7 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   cancelOrder?: Maybe<Order>;
+  updateOrder?: Maybe<Order>;
   placeOrder?: Maybe<Order>;
 };
 
@@ -64,6 +65,11 @@ export type MutationLoginArgs = {
 
 
 export type MutationCancelOrderArgs = {
+  id: Scalars['Float'];
+};
+
+
+export type MutationUpdateOrderArgs = {
   id: Scalars['Float'];
 };
 
@@ -231,6 +237,13 @@ export type RestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type RestaurantsQuery = { __typename?: 'Query', restaurants?: Maybe<Array<{ __typename?: 'Restaurant', id: number, name: string, description: string, meals?: Maybe<Array<{ __typename?: 'Meal', id: number, name: string, description: string, price: number }>> }>> };
+
+export type UpdateOrderMutationVariables = Exact<{
+  id: Scalars['Float'];
+}>;
+
+
+export type UpdateOrderMutation = { __typename?: 'Mutation', updateOrder?: Maybe<{ __typename?: 'Order', id: number }> };
 
 
 export const CancelOrderDocument = gql`
@@ -683,3 +696,36 @@ export function useRestaurantsLazyQuery(baseOptions?: ApolloReactHooks.LazyQuery
 export type RestaurantsQueryHookResult = ReturnType<typeof useRestaurantsQuery>;
 export type RestaurantsLazyQueryHookResult = ReturnType<typeof useRestaurantsLazyQuery>;
 export type RestaurantsQueryResult = Apollo.QueryResult<RestaurantsQuery, RestaurantsQueryVariables>;
+export const UpdateOrderDocument = gql`
+    mutation UpdateOrder($id: Float!) {
+  updateOrder(id: $id) {
+    id
+  }
+}
+    `;
+export type UpdateOrderMutationFn = Apollo.MutationFunction<UpdateOrderMutation, UpdateOrderMutationVariables>;
+
+/**
+ * __useUpdateOrderMutation__
+ *
+ * To run a mutation, you first call `useUpdateOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateOrderMutation, { data, loading, error }] = useUpdateOrderMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUpdateOrderMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateOrderMutation, UpdateOrderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useMutation<UpdateOrderMutation, UpdateOrderMutationVariables>(UpdateOrderDocument, options);
+      }
+export type UpdateOrderMutationHookResult = ReturnType<typeof useUpdateOrderMutation>;
+export type UpdateOrderMutationResult = Apollo.MutationResult<UpdateOrderMutation>;
+export type UpdateOrderMutationOptions = Apollo.BaseMutationOptions<UpdateOrderMutation, UpdateOrderMutationVariables>;

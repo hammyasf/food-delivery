@@ -17,6 +17,8 @@ import { MyContext } from "src/types";
 import { isAuth } from "./../middlewares/isAuthMiddleware";
 import { getAuthUser } from "./../helpers/auth";
 import { Order } from "./../entities/Order";
+import { MealsOnOrder } from "./../entities/MealsOnOrder";
+import { Meal } from "./../entities/Meal";
 
 @InputType()
 class OrderMeals {
@@ -45,11 +47,19 @@ export class OrderResolver {
     @Arg("options") { page, perPage }: PaginationOptions
   ) {
     const user = await getAuthUser({ context: { prisma, payload, res, req } });
+
     if (user!.type === "RESTAURANT_OWNER") {
-      return prisma.order.findMany({
-        //@ts-ignore
-        where: { restaurantId: user!.restaurants!.id },
-        include: { meals: { include: { meal: true } } },
+      return await prisma.order.findMany({
+        where: {
+          restaurant: {
+            userId: user!.id,
+          },
+        },
+        include: {
+          meals: { include: { meal: true } },
+          restaurant: true,
+          statuses: { orderBy: { createdAt: "desc" } },
+        },
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * perPage,
         take: perPage,
@@ -97,6 +107,71 @@ export class OrderResolver {
         id: id,
       },
       data: { statuses: { create: { status: "CANCELED" } } },
+    });
+    return order;
+  }
+
+  @Mutation(() => Order, { nullable: true })
+  @UseMiddleware(isAuth)
+  async updateOrder(
+    @Ctx() { prisma, payload, res, req }: MyContext,
+    @Arg("id") id: number
+  ) {
+    const user = await getAuthUser({ context: { prisma, payload, res, req } });
+
+    if (user?.type !== "RESTAURANT_OWNER") {
+      throw new Error("You Must Be A Restaurant Owner To Update.");
+    }
+
+    const o = await prisma.order.findUnique({
+      where: { id: id },
+      include: { statuses: { orderBy: { createdAt: "desc" } } },
+    });
+
+    const r = await prisma.restaurant.findUnique({
+      where: { id: o!.restaurantId },
+    });
+
+    if (r?.userId !== user?.id) {
+      throw new Error("This Order Isn't from one of the restaurants you own.");
+    }
+
+    if (o?.statuses[0].status === "CANCELED") {
+      throw new Error("You Can't Update an order if it's canceled.");
+    }
+
+    let update_to:
+      | "PLACED"
+      | "PROCESSING"
+      | "IN_ROUTE"
+      | "DELIVERED"
+      | "RECEIVED" = "PLACED";
+    switch (o?.statuses[0].status) {
+      case "PLACED":
+        update_to = "PROCESSING";
+        break;
+      case "PROCESSING":
+        update_to = "IN_ROUTE";
+        break;
+      case "IN_ROUTE":
+        update_to = "DELIVERED";
+        break;
+      case "DELIVERED":
+        update_to = "RECEIVED";
+        break;
+      case "RECEIVED":
+        update_to = "RECEIVED";
+        break;
+      default:
+        update_to = "PLACED";
+        break;
+    }
+
+    const order = await prisma.order.update({
+      where: {
+        id: id,
+      },
+      data: { statuses: { create: { status: update_to } } },
     });
     return order;
   }
