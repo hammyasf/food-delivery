@@ -28,18 +28,6 @@ async function main() {
 
   app.use(cookieParser());
 
-  app.get("/orders", async (req, res) => {
-    return res.send(
-      await prisma.order.findMany({
-        include: {
-          meals: {
-            include: { meal: true },
-          },
-        },
-      })
-    );
-  });
-
   // REST Route, exclusive to refresh token
   app.post("/refresh_token", async (req, res) => {
     const token = req.cookies.jid;

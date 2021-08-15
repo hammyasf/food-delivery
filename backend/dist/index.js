@@ -25,15 +25,6 @@ async function main() {
         credentials: true,
     }));
     app.use(cookie_parser_1.default());
-    app.get("/orders", async (req, res) => {
-        return res.send(await prisma.order.findMany({
-            include: {
-                meals: {
-                    include: { meal: true },
-                },
-            },
-        }));
-    });
     app.post("/refresh_token", async (req, res) => {
         const token = req.cookies.jid;
         if (!token) {
