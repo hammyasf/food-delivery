@@ -33,4 +33,7 @@ export class Restaurant {
 
   @Field()
   updatedAt: Date;
+
+  @Field()
+  deleted: Boolean;
 }

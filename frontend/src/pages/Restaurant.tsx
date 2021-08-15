@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  chakra,
   Grid,
   HStack,
   useColorModeValue,
@@ -72,7 +73,13 @@ export function Restaurant() {
   return (
     <HStack bg={bgValue} alignItems="start" h={"calc(100vh - 70px)"}>
       <VStack spacing={4} w={"full"}>
-        <Box textAlign="left" w="full" px={8} pt={2}></Box>
+        <Box textAlign="left" w="full" px={8} pt={2}>
+          <chakra.h1 fontSize={"2xl"} fontWeight="bold" textAlign="left">
+            {data?.restaurant?.meals?.length} Meal
+            {data!.restaurant!.meals!.length === 1 ? "" : "s"} available right
+            now
+          </chakra.h1>
+        </Box>
         <Grid
           px={30}
           py={15}

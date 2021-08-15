@@ -1,0 +1,7 @@
+mutation UpdateRestaurant($name: String!, $description: String!, $id: Float!) {
+  updateRestaurant(
+    options: { name: $name, description: $description, id: $id }
+  ) {
+    id
+  }
+}

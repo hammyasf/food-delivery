@@ -1,0 +1,5 @@
+mutation AddRestaurant($name: String!, $description: String!) {
+  addRestaurant(options: { name: $name, description: $description }) {
+    id
+  }
+}

@@ -55,6 +55,7 @@ model Restaurant {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deleted Boolean @default(false)
 }
 
 // Meal Model
@@ -73,6 +74,7 @@ model Meal {
   updatedAt DateTime @updatedAt
 
   orders MealsOnOrder[]
+  deleted Boolean @default(false)
 }
 
 // Order Model

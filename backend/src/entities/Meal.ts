@@ -30,4 +30,7 @@ export class Meal {
 
   @Field()
   updatedAt: Date;
+
+  @Field()
+  deleted: Boolean;
 }

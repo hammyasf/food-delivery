@@ -7,10 +7,8 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { Redirect } from "react-router-dom";
-import { LoginForm } from "../components/LoginForm";
 import { RegisterForm } from "../components/RegisterForm";
 import { useMeQuery } from "../generated/graphql";
-import { getIsAuthenticated } from "../utils/isAuthenticated";
 
 export function Register() {
   const bgColor = useColorModeValue("gray.50", "gray.800");
