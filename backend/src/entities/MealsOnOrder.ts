@@ -9,7 +9,7 @@ export class MealsOnOrder {
 
   orderId: number;
 
-  @Field((_) => Meal)
+  @Field((_) => Meal, { nullable: true })
   meal: Meal;
 
   mealId: number;

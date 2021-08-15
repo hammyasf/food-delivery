@@ -18,7 +18,7 @@ export class Order {
   @Field((_) => [OrderStatus], { nullable: true })
   statuses?: OrderStatus[];
 
-  @Field((_) => [MealsOnOrder])
+  @Field((_) => [MealsOnOrder], { nullable: true })
   meals: MealsOnOrder[];
 
   userId: number;

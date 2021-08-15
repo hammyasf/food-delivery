@@ -1,6 +1,7 @@
 import { User } from "../entities/User";
 import { sign, verify } from "jsonwebtoken";
 import { MyContext } from "src/types";
+import { Restaurant } from "../entities/Restaurant";
 
 export function createAccessToken(user: User) {
   return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
@@ -22,7 +23,7 @@ export async function getAuthUser({
   context,
 }: {
   context: MyContext;
-}): Promise<User | null> {
+}): Promise<(User & { restaurants: Restaurant[] }) | null> {
   const authorization = context.req.headers["authorization"];
 
   if (!authorization) {
@@ -38,7 +39,9 @@ export async function getAuthUser({
     return null;
   }
 
+  //@ts-ignore
   return await context.prisma.user.findUnique({
     where: { id: parseInt(context.payload!.userId) },
+    include: { restaurants: true },
   });
 }

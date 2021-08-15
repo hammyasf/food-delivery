@@ -12,6 +12,7 @@ import cors from "cors";
 import { createAccessToken, createRefreshToken } from "./helpers/auth";
 import { sendRefreshToken } from "./helpers/sendRefreshToken";
 import { RestaurantResolver } from "./resolvers/RestaurantResolver";
+import { OrderResolver } from "./resolvers/OrderResolver";
 
 const prisma = new PrismaClient();
 
@@ -26,6 +27,18 @@ async function main() {
   );
 
   app.use(cookieParser());
+
+  app.get("/orders", async (req, res) => {
+    return res.send(
+      await prisma.order.findMany({
+        include: {
+          meals: {
+            include: { meal: true },
+          },
+        },
+      })
+    );
+  });
 
   // REST Route, exclusive to refresh token
   app.post("/refresh_token", async (req, res) => {
@@ -62,7 +75,7 @@ async function main() {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, RestaurantResolver],
+      resolvers: [UserResolver, RestaurantResolver, OrderResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({

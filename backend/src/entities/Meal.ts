@@ -1,8 +1,9 @@
-import { ObjectType, Field, Float } from "type-graphql";
+import { ObjectType, Field, Float, InputType } from "type-graphql";
 import { Order } from "./Order";
 import { Restaurant } from "./Restaurant";
 
 @ObjectType()
+@InputType()
 export class Meal {
   @Field()
   id: number;

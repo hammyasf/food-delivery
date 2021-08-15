@@ -16,6 +16,7 @@ const cors_1 = __importDefault(require("cors"));
 const auth_1 = require("./helpers/auth");
 const sendRefreshToken_1 = require("./helpers/sendRefreshToken");
 const RestaurantResolver_1 = require("./resolvers/RestaurantResolver");
+const OrderResolver_1 = require("./resolvers/OrderResolver");
 const prisma = new client_1.PrismaClient();
 async function main() {
     const app = express_1.default();
@@ -24,6 +25,15 @@ async function main() {
         credentials: true,
     }));
     app.use(cookie_parser_1.default());
+    app.get("/orders", async (req, res) => {
+        return res.send(await prisma.order.findMany({
+            include: {
+                meals: {
+                    include: { meal: true },
+                },
+            },
+        }));
+    });
     app.post("/refresh_token", async (req, res) => {
         const token = req.cookies.jid;
         if (!token) {
@@ -51,7 +61,7 @@ async function main() {
     });
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: await type_graphql_1.buildSchema({
-            resolvers: [UserResolver_1.UserResolver, RestaurantResolver_1.RestaurantResolver],
+            resolvers: [UserResolver_1.UserResolver, RestaurantResolver_1.RestaurantResolver, OrderResolver_1.OrderResolver],
             validate: false,
         }),
         context: ({ req, res }) => ({

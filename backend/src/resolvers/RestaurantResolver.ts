@@ -21,10 +21,7 @@ export class RestaurantResolver {
 
   @Query(() => Restaurant, { nullable: true })
   @UseMiddleware(isAuth)
-  async restaurant(
-    @Ctx() { prisma, payload, res, req }: MyContext,
-    @Arg("id") id: number
-  ) {
+  async restaurant(@Ctx() { prisma }: MyContext, @Arg("id") id: number) {
     return prisma.restaurant.findUnique({
       where: {
         id: id,
