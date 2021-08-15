@@ -1,0 +1,5 @@
+mutation CancelOrder($id: Float!) {
+  cancelOrder(id: $id) {
+    id
+  }
+}

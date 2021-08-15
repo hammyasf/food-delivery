@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
 import { Card } from "../components/Card";
 import { CartItem } from "../components/CartItem";
 import {
@@ -26,6 +26,7 @@ export function Restaurant() {
 
   const [cart, setCart]: any = useState([]);
   const [cartCost, setCartCost] = useState(0);
+  const [hasOrdered, setHasOrdered] = useState(false);
 
   function removeItem(e: any) {
     let array = [...cart];
@@ -36,11 +37,12 @@ export function Restaurant() {
     }
   }
 
-  function makeOrder() {
+  async function makeOrder() {
     const meals = cart.map((c: any) => c.id);
-    placeOrder({
+    await placeOrder({
       variables: { meals: meals, restaurantId: data!.restaurant!.id },
     });
+    setHasOrdered(true);
   }
 
   useEffect(() => {
@@ -51,6 +53,10 @@ export function Restaurant() {
     });
     setCartCost(total_cost);
   }, [cart]);
+
+  if (hasOrdered) {
+    return <Redirect to="/orders" />;
+  }
 
   return (
     <HStack bg={bgValue} alignItems="start" h={"calc(100vh - 70px)"}>

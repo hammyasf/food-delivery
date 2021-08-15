@@ -6,13 +6,13 @@ import {
   InputType,
   Mutation,
   PubSub,
-  PubSubEngine,
   Query,
   Resolver,
   Root,
   Subscription,
   UseMiddleware,
 } from "type-graphql";
+import { PubSubEngine } from "graphql-subscriptions";
 import { MyContext } from "src/types";
 import { isAuth } from "./../middlewares/isAuthMiddleware";
 import { getAuthUser } from "./../helpers/auth";
@@ -27,11 +27,23 @@ class OrderMeals {
   restaurantId: number;
 }
 
+@InputType()
+class PaginationOptions {
+  @Field(() => Float)
+  page: number;
+
+  @Field(() => Float)
+  perPage: number;
+}
+
 @Resolver(Order)
 export class OrderResolver {
   @Query(() => [Order], { nullable: true })
   @UseMiddleware(isAuth)
-  async orders(@Ctx() { prisma, payload, res, req }: MyContext) {
+  async orders(
+    @Ctx() { prisma, payload, res, req }: MyContext,
+    @Arg("options") { page, perPage }: PaginationOptions
+  ) {
     const user = await getAuthUser({ context: { prisma, payload, res, req } });
     if (user!.type === "RESTAURANT_OWNER") {
       return prisma.order.findMany({
@@ -39,16 +51,54 @@ export class OrderResolver {
         where: { restaurantId: user!.restaurants!.id },
         include: { meals: { include: { meal: true } } },
         orderBy: { createdAt: "desc" },
+        skip: (page - 1) * perPage,
+        take: perPage,
       });
     }
     return await prisma.order.findMany({
+      where: { userId: user!.id },
       include: {
         meals: { include: { meal: true } },
         restaurant: true,
         statuses: { orderBy: { createdAt: "desc" } },
       },
       orderBy: { createdAt: "desc" },
+      skip: (page - 1) * perPage,
+      take: perPage,
     });
+  }
+
+  @Mutation(() => Order, { nullable: true })
+  @UseMiddleware(isAuth)
+  async cancelOrder(
+    @Ctx() { prisma, payload, res, req }: MyContext,
+    @Arg("id") id: number
+  ) {
+    const user = await getAuthUser({ context: { prisma, payload, res, req } });
+
+    if (user?.type !== "USER") {
+      throw new Error("You Must Be A Regular User To Cancel.");
+    }
+
+    const o = await prisma.order.findUnique({
+      where: { id: id },
+      include: { statuses: { orderBy: { createdAt: "desc" } } },
+    });
+    if (o?.userId !== user?.id) {
+      throw new Error("User Did Not Create This Order");
+    }
+
+    if (o.statuses[0].status !== "PLACED") {
+      throw new Error("You Can't Cancel An Order After it's accepted");
+    }
+
+    const order = await prisma.order.update({
+      where: {
+        id: id,
+      },
+      data: { statuses: { create: { status: "CANCELED" } } },
+    });
+    return order;
   }
 
   @Mutation(() => Order, { nullable: true })
@@ -88,6 +138,12 @@ export class OrderResolver {
 
     const final_order = await prisma.order.findUnique({
       where: { id: order.id },
+      include: {
+        meals: {
+          include: { meal: true },
+        },
+        restaurant: true,
+      },
     });
 
     await pubSub.publish("ORDERS", final_order);
@@ -95,13 +151,11 @@ export class OrderResolver {
     return final_order;
   }
 
-  @Subscription({
+  @Subscription(() => Order, {
     topics: "ORDERS",
+    nullable: true,
   })
-  newOrder(@Root() orderPayload: any): Order {
-    return {
-      ...orderPayload,
-      date: new Date(),
-    };
+  async newOrder(@Root() orderPayload: any): Promise<Order> {
+    return orderPayload;
   }
 }

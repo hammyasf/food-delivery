@@ -17,6 +17,7 @@ export function Routes() {
         <Route exact path="/login" render={() => <Login />} />
         <Route exact path="/restaurants" render={() => <Restaurants />} />
         <Route exact path="/orders" render={() => <Orders />} />
+        <Route exact path="/orders/:page" render={() => <Orders />} />
         <Route exact path="/restaurants/:id" render={() => <Restaurant />} />
       </Switch>
     </BrowserRouter>

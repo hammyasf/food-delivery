@@ -48,6 +48,7 @@ export type Mutation = {
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
+  cancelOrder?: Maybe<Order>;
   placeOrder?: Maybe<Order>;
 };
 
@@ -59,6 +60,11 @@ export type MutationRegisterArgs = {
 
 export type MutationLoginArgs = {
   options: UsernamePasswordInput;
+};
+
+
+export type MutationCancelOrderArgs = {
+  id: Scalars['Float'];
 };
 
 
@@ -91,6 +97,11 @@ export type OrderStatus = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type PaginationOptions = {
+  page: Scalars['Float'];
+  perPage: Scalars['Float'];
+};
+
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
@@ -105,6 +116,11 @@ export type QueryRestaurantArgs = {
   id: Scalars['Float'];
 };
 
+
+export type QueryOrdersArgs = {
+  options: PaginationOptions;
+};
+
 export type Restaurant = {
   __typename?: 'Restaurant';
   id: Scalars['Float'];
@@ -115,6 +131,11 @@ export type Restaurant = {
   user: User;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  newOrder?: Maybe<Order>;
 };
 
 export type User = {
@@ -140,6 +161,13 @@ export type UsernamePasswordInput = {
   password: Scalars['String'];
 };
 
+export type CancelOrderMutationVariables = Exact<{
+  id: Scalars['Float'];
+}>;
+
+
+export type CancelOrderMutation = { __typename?: 'Mutation', cancelOrder?: Maybe<{ __typename?: 'Order', id: number }> };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -163,7 +191,15 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string, type: string }> };
 
-export type OrdersQueryVariables = Exact<{ [key: string]: never; }>;
+export type NewOrdersSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type NewOrdersSubscription = { __typename?: 'Subscription', newOrder?: Maybe<{ __typename?: 'Order', id: number, createdAt: any, meals?: Maybe<Array<{ __typename?: 'MealsOnOrder', quantity: number, meal?: Maybe<{ __typename?: 'Meal', name: string }> }>> }> };
+
+export type OrdersQueryVariables = Exact<{
+  page: Scalars['Float'];
+  perPage: Scalars['Float'];
+}>;
 
 
 export type OrdersQuery = { __typename?: 'Query', orders?: Maybe<Array<{ __typename?: 'Order', id: number, createdAt: any, statuses?: Maybe<Array<{ __typename?: 'OrderStatus', status: string, createdAt: any }>>, meals?: Maybe<Array<{ __typename?: 'MealsOnOrder', quantity: number, meal?: Maybe<{ __typename?: 'Meal', name: string, price: number }> }>>, restaurant: { __typename?: 'Restaurant', id: number, name: string, description: string } }>> };
@@ -197,6 +233,39 @@ export type RestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
 export type RestaurantsQuery = { __typename?: 'Query', restaurants?: Maybe<Array<{ __typename?: 'Restaurant', id: number, name: string, description: string, meals?: Maybe<Array<{ __typename?: 'Meal', id: number, name: string, description: string, price: number }>> }>> };
 
 
+export const CancelOrderDocument = gql`
+    mutation CancelOrder($id: Float!) {
+  cancelOrder(id: $id) {
+    id
+  }
+}
+    `;
+export type CancelOrderMutationFn = Apollo.MutationFunction<CancelOrderMutation, CancelOrderMutationVariables>;
+
+/**
+ * __useCancelOrderMutation__
+ *
+ * To run a mutation, you first call `useCancelOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCancelOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [cancelOrderMutation, { data, loading, error }] = useCancelOrderMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useCancelOrderMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CancelOrderMutation, CancelOrderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useMutation<CancelOrderMutation, CancelOrderMutationVariables>(CancelOrderDocument, options);
+      }
+export type CancelOrderMutationHookResult = ReturnType<typeof useCancelOrderMutation>;
+export type CancelOrderMutationResult = Apollo.MutationResult<CancelOrderMutation>;
+export type CancelOrderMutationOptions = Apollo.BaseMutationOptions<CancelOrderMutation, CancelOrderMutationVariables>;
 export const CurrentUserDocument = gql`
     query currentUser {
   currentUser {
@@ -361,9 +430,45 @@ export function useMeLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptio
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const NewOrdersDocument = gql`
+    subscription NewOrders {
+  newOrder {
+    id
+    createdAt
+    meals {
+      meal {
+        name
+      }
+      quantity
+    }
+  }
+}
+    `;
+
+/**
+ * __useNewOrdersSubscription__
+ *
+ * To run a query within a React component, call `useNewOrdersSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useNewOrdersSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNewOrdersSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useNewOrdersSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<NewOrdersSubscription, NewOrdersSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useSubscription<NewOrdersSubscription, NewOrdersSubscriptionVariables>(NewOrdersDocument, options);
+      }
+export type NewOrdersSubscriptionHookResult = ReturnType<typeof useNewOrdersSubscription>;
+export type NewOrdersSubscriptionResult = Apollo.SubscriptionResult<NewOrdersSubscription>;
 export const OrdersDocument = gql`
-    query Orders {
-  orders {
+    query Orders($page: Float!, $perPage: Float!) {
+  orders(options: {page: $page, perPage: $perPage}) {
     id
     createdAt
     statuses {
@@ -398,10 +503,12 @@ export const OrdersDocument = gql`
  * @example
  * const { data, loading, error } = useOrdersQuery({
  *   variables: {
+ *      page: // value for 'page'
+ *      perPage: // value for 'perPage'
  *   },
  * });
  */
-export function useOrdersQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<OrdersQuery, OrdersQueryVariables>) {
+export function useOrdersQuery(baseOptions: ApolloReactHooks.QueryHookOptions<OrdersQuery, OrdersQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return ApolloReactHooks.useQuery<OrdersQuery, OrdersQueryVariables>(OrdersDocument, options);
       }

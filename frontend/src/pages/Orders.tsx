@@ -1,7 +1,6 @@
-import { DeleteIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Button,
   Center,
   Text,
   Spinner,
@@ -15,17 +14,33 @@ import {
   Thead,
   Tr,
   useColorModeValue,
-  Divider,
   Stack,
+  IconButton,
+  VStack,
+  Flex,
+  Divider,
 } from "@chakra-ui/react";
+import { useParams, Link, Redirect } from "react-router-dom";
+import { OrderTableCancelButton } from "../components/OrderTableCancelButton";
 import { getStatusColor } from "../constants/statusColors";
 import { useOrdersQuery } from "../generated/graphql";
 
 export function Orders() {
-  const { data, loading } = useOrdersQuery({
+  const { page }: { page: string } = useParams();
+  const { data, loading, refetch } = useOrdersQuery({
     fetchPolicy: "network-only",
+    pollInterval: 5000,
+    variables: {
+      page: parseInt(page),
+      perPage: 5,
+    },
   });
-  const bgColor = useColorModeValue("gray.300", "gray.900");
+  const bgColor = useColorModeValue("gray.300", "gray.500");
+  const bgColor2 = useColorModeValue("white", "gray.900");
+
+  if (!page) {
+    return <Redirect to="/orders/1" />;
+  }
 
   if (loading) {
     return (
@@ -36,9 +51,10 @@ export function Orders() {
       </Box>
     );
   }
+
   return (
-    <Box p={30}>
-      <Box rounded="md" bg={bgColor}>
+    <Box p={30} bg={bgColor}>
+      <Box rounded="md" bg={bgColor2}>
         <Table>
           {data!.orders!.length <= 0 && (
             <TableCaption>No Orders Yet!</TableCaption>
@@ -53,7 +69,7 @@ export function Orders() {
             </Tr>
           </Thead>
           <Tbody>
-            {data?.orders?.map((order) => (
+            {data!.orders!.map((order) => (
               <Tr key={order.id}>
                 <Td>
                   <Tag colorScheme={getStatusColor(order.statuses![0].status)}>
@@ -70,9 +86,9 @@ export function Orders() {
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {order.meals?.map((meal) => {
+                        {order.meals?.map((meal: any) => {
                           return (
-                            <Tr>
+                            <Tr key={`meal-key-${meal.meal?.name}`}>
                               <Td>{meal.meal?.name}</Td>
                               <Td>{meal.quantity}</Td>
                             </Tr>
@@ -98,13 +114,12 @@ export function Orders() {
                 {order.statuses!.length > 0 ? (
                   order.statuses![0].status === "PLACED" ? (
                     <Td>
-                      <Button
-                        leftIcon={<DeleteIcon />}
-                        colorScheme={"red"}
-                        variant="outline"
-                      >
-                        Cancel
-                      </Button>
+                      <OrderTableCancelButton
+                        onClick={() =>
+                          refetch({ page: parseInt(page), perPage: 5 })
+                        }
+                        id={order.id}
+                      />
                     </Td>
                   ) : (
                     <Td>
@@ -138,6 +153,25 @@ export function Orders() {
           )}
         </Table>
       </Box>
+      <Flex justifyContent="flex-end" w={"full"} p={4}>
+        {parseInt(page) > 1 && (
+          <IconButton
+            aria-label="Go To Previous Page"
+            icon={<ArrowBackIcon />}
+            colorScheme={"blue"}
+            as={Link}
+            to={`/orders/${parseInt(page) - 1}`}
+          />
+        )}
+        <Box w={2} />
+        <IconButton
+          aria-label="Go To Next Page"
+          icon={<ArrowForwardIcon />}
+          colorScheme={"blue"}
+          as={Link}
+          to={`/orders/${parseInt(page) + 1}`}
+        />
+      </Flex>
     </Box>
   );
 }

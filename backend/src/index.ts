@@ -83,7 +83,7 @@ async function main() {
 
   apolloServer.installSubscriptionHandlers(httpServer);
 
-  app.listen(4000, () => {
+  httpServer.listen(4000, () => {
     console.log("Server Started At http://localhost:4000");
     console.log(
       `🚀 Server ready at http://localhost:4000${apolloServer.graphqlPath}`

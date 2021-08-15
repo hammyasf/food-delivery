@@ -1,0 +1,12 @@
+subscription NewOrders {
+  newOrder {
+    id
+    createdAt
+    meals {
+      meal {
+        name
+      }
+      quantity
+    }
+  }
+}

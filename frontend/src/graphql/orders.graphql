@@ -1,5 +1,5 @@
-query Orders {
-  orders {
+query Orders($page: Float!, $perPage: Float!) {
+  orders(options: { page: $page, perPage: $perPage }) {
     id
     createdAt
     statuses {
