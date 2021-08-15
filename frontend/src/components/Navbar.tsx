@@ -16,6 +16,7 @@ import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { setAccessToken } from "../utils/accessToken";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
+import { setIsAuthenticated } from "../utils/isAuthenticated";
 
 function NavLink({ children, to }: { children: ReactNode; to: string }) {
   return (
@@ -77,6 +78,7 @@ export function Navbar() {
                   <MenuItem
                     onClick={async () => {
                       await logout();
+                      setIsAuthenticated(false);
                       setAccessToken("");
                       await client!.resetStore();
                     }}

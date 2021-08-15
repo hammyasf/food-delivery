@@ -11,14 +11,17 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card } from "../components/Card";
 import { CartItem } from "../components/CartItem";
-import { useRestaurantQuery } from "./../generated/graphql";
+import {
+  usePlaceOrderMutation,
+  useRestaurantQuery,
+} from "./../generated/graphql";
 
 export function Restaurant() {
   const { id }: any = useParams();
   const { data } = useRestaurantQuery({
     variables: { id: parseInt(id) },
-    fetchPolicy: "network-only",
   });
+  const [placeOrder, { loading }] = usePlaceOrderMutation();
   const bgValue = useColorModeValue("#F9FAFB", "gray.600");
 
   const [cart, setCart]: any = useState([]);
@@ -33,10 +36,17 @@ export function Restaurant() {
     }
   }
 
+  function makeOrder() {
+    const meals = cart.map((c: any) => c.id);
+    placeOrder({
+      variables: { meals: meals, restaurantId: data!.restaurant!.id },
+    });
+  }
+
   useEffect(() => {
     let total_cost = 0;
-    //@ts-ignore
-    cart.map((c) => {
+
+    cart.forEach((c: any) => {
       total_cost += c.price;
     });
     setCartCost(total_cost);
@@ -100,7 +110,14 @@ export function Restaurant() {
               </div>
             );
           })}
-          <Button bg={"green.500"} color="white" w="full">
+          <Button
+            bg={"green.500"}
+            color="white"
+            w="full"
+            onClick={makeOrder}
+            loadingText="Ordering"
+            isLoading={loading}
+          >
             Order Now ${cartCost}
           </Button>
         </Box>

@@ -17,6 +17,7 @@ const auth_1 = require("./helpers/auth");
 const sendRefreshToken_1 = require("./helpers/sendRefreshToken");
 const RestaurantResolver_1 = require("./resolvers/RestaurantResolver");
 const OrderResolver_1 = require("./resolvers/OrderResolver");
+const http_1 = require("http");
 const prisma = new client_1.PrismaClient();
 async function main() {
     const app = express_1.default();
@@ -60,10 +61,17 @@ async function main() {
             req,
             res,
         }),
+        subscriptions: {
+            onConnect: () => console.log("connected to websocket"),
+        },
     });
     apolloServer.applyMiddleware({ app, cors: false });
+    const httpServer = http_1.createServer(app);
+    apolloServer.installSubscriptionHandlers(httpServer);
     app.listen(4000, () => {
         console.log("Server Started At http://localhost:4000");
+        console.log(`🚀 Server ready at http://localhost:4000${apolloServer.graphqlPath}`);
+        console.log(`🚀 Subscriptions ready at ws://localhost:4000${apolloServer.subscriptionsPath}`);
     });
 }
 main()

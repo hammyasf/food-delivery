@@ -8,7 +8,7 @@ export function Home() {
     fetchPolicy: "network-only",
   });
 
-  if (getIsAuthenticated()) {
+  if (getIsAuthenticated() || data) {
     return <Redirect to="/restaurants" />;
   }
 
@@ -19,10 +19,6 @@ export function Home() {
   if (error) {
     console.log(error);
     return <div>Not Authenticated</div>;
-  }
-
-  if (!data) {
-    return <div>No Data!</div>;
   }
 
   return (

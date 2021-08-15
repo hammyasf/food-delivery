@@ -13,4 +13,7 @@ export class MealsOnOrder {
   meal: Meal;
 
   mealId: number;
+
+  @Field()
+  quantity: number;
 }

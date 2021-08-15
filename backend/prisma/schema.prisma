@@ -120,5 +120,7 @@ model MealsOnOrder {
   meal   Meal @relation(fields: [mealId], references: [id])
   mealId Int
 
+  quantity Int @default(1)
+
   @@id([orderId, mealId])
 }

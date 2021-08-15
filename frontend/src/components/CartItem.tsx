@@ -3,7 +3,6 @@ import {
   Box,
   Stack,
   useColorModeValue,
-  Text,
   Heading,
   Flex,
   IconButton,

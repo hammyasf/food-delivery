@@ -39,7 +39,8 @@ export type Meal = {
 export type MealsOnOrder = {
   __typename?: 'MealsOnOrder';
   order: Order;
-  meal: Meal;
+  meal?: Maybe<Meal>;
+  quantity: Scalars['Float'];
 };
 
 export type Mutation = {
@@ -47,6 +48,7 @@ export type Mutation = {
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
+  placeOrder?: Maybe<Order>;
 };
 
 
@@ -59,15 +61,25 @@ export type MutationLoginArgs = {
   options: UsernamePasswordInput;
 };
 
+
+export type MutationPlaceOrderArgs = {
+  options: OrderMeals;
+};
+
 export type Order = {
   __typename?: 'Order';
   id: Scalars['Float'];
   user: User;
   restaurant: Restaurant;
   statuses?: Maybe<Array<OrderStatus>>;
-  meals: Array<MealsOnOrder>;
+  meals?: Maybe<Array<MealsOnOrder>>;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+};
+
+export type OrderMeals = {
+  meals: Array<Scalars['Float']>;
+  restaurantId: Scalars['Float'];
 };
 
 export type OrderStatus = {
@@ -85,6 +97,7 @@ export type Query = {
   currentUser: User;
   restaurants?: Maybe<Array<Restaurant>>;
   restaurant?: Maybe<Restaurant>;
+  orders?: Maybe<Array<Order>>;
 };
 
 
@@ -130,7 +143,7 @@ export type UsernamePasswordInput = {
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'User', id: number, username: string, type: string, orders?: Maybe<Array<{ __typename?: 'Order', statuses?: Maybe<Array<{ __typename?: 'OrderStatus', status: string }>>, meals: Array<{ __typename?: 'MealsOnOrder', meal: { __typename?: 'Meal', name: string, price: number } }> }>>, restaurants?: Maybe<Array<{ __typename?: 'Restaurant', name: string, description: string, meals?: Maybe<Array<{ __typename?: 'Meal', name: string, price: number }>> }>> } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'User', id: number, username: string, type: string, orders?: Maybe<Array<{ __typename?: 'Order', statuses?: Maybe<Array<{ __typename?: 'OrderStatus', status: string }>>, meals?: Maybe<Array<{ __typename?: 'MealsOnOrder', meal?: Maybe<{ __typename?: 'Meal', name: string, price: number }> }>> }>>, restaurants?: Maybe<Array<{ __typename?: 'Restaurant', name: string, description: string, meals?: Maybe<Array<{ __typename?: 'Meal', name: string, price: number }>> }>> } };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
@@ -149,6 +162,19 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string, type: string }> };
+
+export type OrdersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OrdersQuery = { __typename?: 'Query', orders?: Maybe<Array<{ __typename?: 'Order', id: number, createdAt: any, statuses?: Maybe<Array<{ __typename?: 'OrderStatus', status: string, createdAt: any }>>, meals?: Maybe<Array<{ __typename?: 'MealsOnOrder', quantity: number, meal?: Maybe<{ __typename?: 'Meal', name: string, price: number }> }>>, restaurant: { __typename?: 'Restaurant', id: number, name: string, description: string } }>> };
+
+export type PlaceOrderMutationVariables = Exact<{
+  meals: Array<Scalars['Float']> | Scalars['Float'];
+  restaurantId: Scalars['Float'];
+}>;
+
+
+export type PlaceOrderMutation = { __typename?: 'Mutation', placeOrder?: Maybe<{ __typename?: 'Order', id: number }> };
 
 export type RegisterMutationVariables = Exact<{
   username: Scalars['String'];
@@ -335,6 +361,91 @@ export function useMeLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptio
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const OrdersDocument = gql`
+    query Orders {
+  orders {
+    id
+    createdAt
+    statuses {
+      status
+      createdAt
+    }
+    meals {
+      meal {
+        name
+        price
+      }
+      quantity
+    }
+    restaurant {
+      id
+      name
+      description
+    }
+  }
+}
+    `;
+
+/**
+ * __useOrdersQuery__
+ *
+ * To run a query within a React component, call `useOrdersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrdersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrdersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOrdersQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<OrdersQuery, OrdersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<OrdersQuery, OrdersQueryVariables>(OrdersDocument, options);
+      }
+export function useOrdersLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<OrdersQuery, OrdersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<OrdersQuery, OrdersQueryVariables>(OrdersDocument, options);
+        }
+export type OrdersQueryHookResult = ReturnType<typeof useOrdersQuery>;
+export type OrdersLazyQueryHookResult = ReturnType<typeof useOrdersLazyQuery>;
+export type OrdersQueryResult = Apollo.QueryResult<OrdersQuery, OrdersQueryVariables>;
+export const PlaceOrderDocument = gql`
+    mutation PlaceOrder($meals: [Float!]!, $restaurantId: Float!) {
+  placeOrder(options: {meals: $meals, restaurantId: $restaurantId}) {
+    id
+  }
+}
+    `;
+export type PlaceOrderMutationFn = Apollo.MutationFunction<PlaceOrderMutation, PlaceOrderMutationVariables>;
+
+/**
+ * __usePlaceOrderMutation__
+ *
+ * To run a mutation, you first call `usePlaceOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePlaceOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [placeOrderMutation, { data, loading, error }] = usePlaceOrderMutation({
+ *   variables: {
+ *      meals: // value for 'meals'
+ *      restaurantId: // value for 'restaurantId'
+ *   },
+ * });
+ */
+export function usePlaceOrderMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<PlaceOrderMutation, PlaceOrderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useMutation<PlaceOrderMutation, PlaceOrderMutationVariables>(PlaceOrderDocument, options);
+      }
+export type PlaceOrderMutationHookResult = ReturnType<typeof usePlaceOrderMutation>;
+export type PlaceOrderMutationResult = Apollo.MutationResult<PlaceOrderMutation>;
+export type PlaceOrderMutationOptions = Apollo.BaseMutationOptions<PlaceOrderMutation, PlaceOrderMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($username: String!, $password: String!) {
   register(options: {username: $username, password: $password}) {

@@ -13,6 +13,7 @@ import { createAccessToken, createRefreshToken } from "./helpers/auth";
 import { sendRefreshToken } from "./helpers/sendRefreshToken";
 import { RestaurantResolver } from "./resolvers/RestaurantResolver";
 import { OrderResolver } from "./resolvers/OrderResolver";
+import { createServer } from "http";
 
 const prisma = new PrismaClient();
 
@@ -71,12 +72,25 @@ async function main() {
       req,
       res,
     }),
+    subscriptions: {
+      onConnect: () => console.log("connected to websocket"),
+    },
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
 
+  const httpServer = createServer(app);
+
+  apolloServer.installSubscriptionHandlers(httpServer);
+
   app.listen(4000, () => {
     console.log("Server Started At http://localhost:4000");
+    console.log(
+      `🚀 Server ready at http://localhost:4000${apolloServer.graphqlPath}`
+    );
+    console.log(
+      `🚀 Subscriptions ready at ws://localhost:4000${apolloServer.subscriptionsPath}`
+    );
   });
 }
 

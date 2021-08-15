@@ -1,0 +1,22 @@
+query Orders {
+  orders {
+    id
+    createdAt
+    statuses {
+      status
+      createdAt
+    }
+    meals {
+      meal {
+        name
+        price
+      }
+      quantity
+    }
+    restaurant {
+      id
+      name
+      description
+    }
+  }
+}
