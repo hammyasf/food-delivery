@@ -44,10 +44,12 @@ export function Orders() {
 
   if (loading) {
     return (
-      <Box h={"calc(100vh - 60px)"}>
-        <Center>
-          <Spinner />
-        </Center>
+      <Box p={30} bg={bgColor} h={"calc(100vh - 70px)"}>
+        <Box rounded="md" bg={bgColor2} h={96}>
+          <Center h="full">
+            <Spinner />
+          </Center>
+        </Box>
       </Box>
     );
   }
