@@ -1,0 +1,17 @@
+mutation AddMeal(
+  $name: String!
+  $description: String!
+  $price: Float!
+  $restaurantId: Float!
+) {
+  addMeal(
+    options: {
+      name: $name
+      description: $description
+      price: $price
+      restaurantId: $restaurantId
+    }
+  ) {
+    id
+  }
+}

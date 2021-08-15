@@ -1,0 +1,5 @@
+mutation DeleteMeal($id: Float!) {
+  deleteMeal(id: $id) {
+    id
+  }
+}

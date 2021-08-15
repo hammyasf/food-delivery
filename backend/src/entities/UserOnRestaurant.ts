@@ -1,6 +1,4 @@
 import { ObjectType, Field } from "type-graphql";
-import { Meal } from "./Meal";
-import { Order } from "./Order";
 import { Restaurant } from "./Restaurant";
 import { User } from "./User";
 

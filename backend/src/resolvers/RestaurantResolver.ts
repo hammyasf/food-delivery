@@ -3,6 +3,7 @@ import {
   Arg,
   Ctx,
   Field,
+  Float,
   InputType,
   Mutation,
   Query,
@@ -12,6 +13,7 @@ import {
 import { MyContext } from "src/types";
 import { isAuth } from "./../middlewares/isAuthMiddleware";
 import { getAuthUser } from "./../helpers/auth";
+import { Meal } from "./../entities/Meal";
 
 @InputType()
 class RestaurantInput {
@@ -34,6 +36,36 @@ class RestaurantUpdateInput {
   id: number;
 }
 
+@InputType()
+class MealInput {
+  @Field(() => String)
+  name: string;
+
+  @Field(() => String)
+  description: string;
+
+  @Field(() => Float)
+  price: number;
+
+  @Field(() => Float)
+  restaurantId: number;
+}
+
+@InputType()
+class MealUpdateInput {
+  @Field(() => String)
+  name: string;
+
+  @Field(() => String)
+  description: string;
+
+  @Field(() => Float)
+  price: number;
+
+  @Field(() => Float)
+  id: number;
+}
+
 @Resolver(Restaurant)
 export class RestaurantResolver {
   @Query(() => [Restaurant], { nullable: true })
@@ -47,7 +79,7 @@ export class RestaurantResolver {
       });
     }
     return prisma.restaurant.findMany({
-      include: { meals: true },
+      include: { meals: true, blockedUser: { where: { userId: user!.id } } },
       where: { deleted: false },
     });
   }
@@ -59,7 +91,7 @@ export class RestaurantResolver {
       where: {
         id: id,
       },
-      include: { meals: { where: { deleted: false } }, user: true },
+      include: { meals: { where: { deleted: false } } },
     });
   }
 
@@ -135,6 +167,96 @@ export class RestaurantResolver {
       where: {
         id: id,
       },
+      data: {
+        deleted: true,
+      },
+    });
+  }
+
+  @Mutation(() => Meal)
+  @UseMiddleware(isAuth)
+  async addMeal(
+    @Ctx() { prisma, payload, res, req }: MyContext,
+    @Arg("options") options: MealInput
+  ) {
+    const user = await getAuthUser({ context: { prisma, payload, res, req } });
+
+    if (user?.type !== "RESTAURANT_OWNER") {
+      throw new Error("You Need To Be A Restaurant To Add Meals.");
+    }
+
+    const r = await prisma.restaurant.findUnique({
+      where: { id: options.restaurantId },
+    });
+
+    if (r?.userId !== user.id) {
+      throw new Error("You cannot edit a restaurant you don't own.");
+    }
+
+    return prisma.meal.create({
+      data: {
+        name: options.name,
+        description: options.description,
+        price: options.price,
+        restaurantId: options.restaurantId,
+      },
+    });
+  }
+
+  @Mutation(() => Meal)
+  @UseMiddleware(isAuth)
+  async updateMeal(
+    @Ctx() { prisma, payload, res, req }: MyContext,
+    @Arg("options") options: MealUpdateInput
+  ) {
+    const user = await getAuthUser({ context: { prisma, payload, res, req } });
+
+    if (user?.type !== "RESTAURANT_OWNER") {
+      throw new Error("You Need To Be A Restaurant To Add Meals.");
+    }
+
+    const r = await prisma.meal.findUnique({
+      where: { id: options.id },
+      include: { restaurant: true },
+    });
+
+    if (r?.restaurant.userId !== user.id) {
+      throw new Error("You cannot edit a restaurant you don't own.");
+    }
+
+    return prisma.meal.update({
+      where: { id: options.id },
+      data: {
+        name: options.name,
+        description: options.description,
+        price: options.price,
+      },
+    });
+  }
+
+  @Mutation(() => Meal)
+  @UseMiddleware(isAuth)
+  async deleteMeal(
+    @Ctx() { prisma, payload, res, req }: MyContext,
+    @Arg("id") id: number
+  ) {
+    const user = await getAuthUser({ context: { prisma, payload, res, req } });
+
+    if (user?.type !== "RESTAURANT_OWNER") {
+      throw new Error("You Need To Be A Restaurant To Add Meals.");
+    }
+
+    const r = await prisma.meal.findUnique({
+      where: { id: id },
+      include: { restaurant: true },
+    });
+
+    if (r?.restaurant.userId !== user.id) {
+      throw new Error("You cannot edit a restaurant you don't own.");
+    }
+
+    return prisma.meal.update({
+      where: { id: id },
       data: {
         deleted: true,
       },

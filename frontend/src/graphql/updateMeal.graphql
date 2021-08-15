@@ -1,0 +1,12 @@
+mutation UpdateMeal(
+  $name: String!
+  $description: String!
+  $price: Float!
+  $id: Float!
+) {
+  updateMeal(
+    options: { name: $name, description: $description, price: $price, id: $id }
+  ) {
+    id
+  }
+}

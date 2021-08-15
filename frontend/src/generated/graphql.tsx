@@ -37,6 +37,20 @@ export type Meal = {
   deleted: Scalars['Boolean'];
 };
 
+export type MealInput = {
+  name: Scalars['String'];
+  description: Scalars['String'];
+  price: Scalars['Float'];
+  restaurantId: Scalars['Float'];
+};
+
+export type MealUpdateInput = {
+  name: Scalars['String'];
+  description: Scalars['String'];
+  price: Scalars['Float'];
+  id: Scalars['Float'];
+};
+
 export type MealsOnOrder = {
   __typename?: 'MealsOnOrder';
   order: Order;
@@ -52,6 +66,9 @@ export type Mutation = {
   addRestaurant: Restaurant;
   updateRestaurant: Restaurant;
   deleteRestaurant: Restaurant;
+  addMeal: Meal;
+  updateMeal: Meal;
+  deleteMeal: Meal;
   cancelOrder?: Maybe<Order>;
   updateOrder?: Maybe<Order>;
   placeOrder?: Maybe<Order>;
@@ -79,6 +96,21 @@ export type MutationUpdateRestaurantArgs = {
 
 
 export type MutationDeleteRestaurantArgs = {
+  id: Scalars['Float'];
+};
+
+
+export type MutationAddMealArgs = {
+  options: MealInput;
+};
+
+
+export type MutationUpdateMealArgs = {
+  options: MealUpdateInput;
+};
+
+
+export type MutationDeleteMealArgs = {
   id: Scalars['Float'];
 };
 
@@ -208,6 +240,16 @@ export type UsernamePasswordTypeInput = {
   restaurant: Scalars['Boolean'];
 };
 
+export type AddMealMutationVariables = Exact<{
+  name: Scalars['String'];
+  description: Scalars['String'];
+  price: Scalars['Float'];
+  restaurantId: Scalars['Float'];
+}>;
+
+
+export type AddMealMutation = { __typename?: 'Mutation', addMeal: { __typename?: 'Meal', id: number } };
+
 export type AddRestaurantMutationVariables = Exact<{
   name: Scalars['String'];
   description: Scalars['String'];
@@ -227,6 +269,13 @@ export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'User', id: number, username: string, type: string, orders?: Maybe<Array<{ __typename?: 'Order', statuses?: Maybe<Array<{ __typename?: 'OrderStatus', status: string }>>, meals?: Maybe<Array<{ __typename?: 'MealsOnOrder', meal?: Maybe<{ __typename?: 'Meal', name: string, price: number }> }>> }>>, restaurants?: Maybe<Array<{ __typename?: 'Restaurant', name: string, description: string, meals?: Maybe<Array<{ __typename?: 'Meal', name: string, price: number }>> }>> } };
+
+export type DeleteMealMutationVariables = Exact<{
+  id: Scalars['Float'];
+}>;
+
+
+export type DeleteMealMutation = { __typename?: 'Mutation', deleteMeal: { __typename?: 'Meal', id: number } };
 
 export type DeleteRestaurantMutationVariables = Exact<{
   id: Scalars['Float'];
@@ -289,12 +338,22 @@ export type RestaurantQueryVariables = Exact<{
 }>;
 
 
-export type RestaurantQuery = { __typename?: 'Query', restaurant?: Maybe<{ __typename?: 'Restaurant', id: number, name: string, description: string, user: { __typename?: 'User', id: number }, meals?: Maybe<Array<{ __typename?: 'Meal', id: number, name: string, description: string, price: number }>> }> };
+export type RestaurantQuery = { __typename?: 'Query', restaurant?: Maybe<{ __typename?: 'Restaurant', id: number, name: string, description: string, meals?: Maybe<Array<{ __typename?: 'Meal', id: number, name: string, description: string, price: number }>> }> };
 
 export type RestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type RestaurantsQuery = { __typename?: 'Query', restaurants?: Maybe<Array<{ __typename?: 'Restaurant', id: number, name: string, description: string, meals?: Maybe<Array<{ __typename?: 'Meal', id: number, name: string, description: string, price: number }>> }>> };
+
+export type UpdateMealMutationVariables = Exact<{
+  name: Scalars['String'];
+  description: Scalars['String'];
+  price: Scalars['Float'];
+  id: Scalars['Float'];
+}>;
+
+
+export type UpdateMealMutation = { __typename?: 'Mutation', updateMeal: { __typename?: 'Meal', id: number } };
 
 export type UpdateOrderMutationVariables = Exact<{
   id: Scalars['Float'];
@@ -313,6 +372,44 @@ export type UpdateRestaurantMutationVariables = Exact<{
 export type UpdateRestaurantMutation = { __typename?: 'Mutation', updateRestaurant: { __typename?: 'Restaurant', id: number } };
 
 
+export const AddMealDocument = gql`
+    mutation AddMeal($name: String!, $description: String!, $price: Float!, $restaurantId: Float!) {
+  addMeal(
+    options: {name: $name, description: $description, price: $price, restaurantId: $restaurantId}
+  ) {
+    id
+  }
+}
+    `;
+export type AddMealMutationFn = Apollo.MutationFunction<AddMealMutation, AddMealMutationVariables>;
+
+/**
+ * __useAddMealMutation__
+ *
+ * To run a mutation, you first call `useAddMealMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddMealMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addMealMutation, { data, loading, error }] = useAddMealMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      price: // value for 'price'
+ *      restaurantId: // value for 'restaurantId'
+ *   },
+ * });
+ */
+export function useAddMealMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AddMealMutation, AddMealMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useMutation<AddMealMutation, AddMealMutationVariables>(AddMealDocument, options);
+      }
+export type AddMealMutationHookResult = ReturnType<typeof useAddMealMutation>;
+export type AddMealMutationResult = Apollo.MutationResult<AddMealMutation>;
+export type AddMealMutationOptions = Apollo.BaseMutationOptions<AddMealMutation, AddMealMutationVariables>;
 export const AddRestaurantDocument = gql`
     mutation AddRestaurant($name: String!, $description: String!) {
   addRestaurant(options: {name: $name, description: $description}) {
@@ -435,6 +532,39 @@ export function useCurrentUserLazyQuery(baseOptions?: ApolloReactHooks.LazyQuery
 export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
+export const DeleteMealDocument = gql`
+    mutation DeleteMeal($id: Float!) {
+  deleteMeal(id: $id) {
+    id
+  }
+}
+    `;
+export type DeleteMealMutationFn = Apollo.MutationFunction<DeleteMealMutation, DeleteMealMutationVariables>;
+
+/**
+ * __useDeleteMealMutation__
+ *
+ * To run a mutation, you first call `useDeleteMealMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteMealMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteMealMutation, { data, loading, error }] = useDeleteMealMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteMealMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DeleteMealMutation, DeleteMealMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useMutation<DeleteMealMutation, DeleteMealMutationVariables>(DeleteMealDocument, options);
+      }
+export type DeleteMealMutationHookResult = ReturnType<typeof useDeleteMealMutation>;
+export type DeleteMealMutationResult = Apollo.MutationResult<DeleteMealMutation>;
+export type DeleteMealMutationOptions = Apollo.BaseMutationOptions<DeleteMealMutation, DeleteMealMutationVariables>;
 export const DeleteRestaurantDocument = gql`
     mutation DeleteRestaurant($id: Float!) {
   deleteRestaurant(id: $id) {
@@ -755,9 +885,6 @@ export const RestaurantDocument = gql`
     id
     name
     description
-    user {
-      id
-    }
     meals {
       id
       name
@@ -837,6 +964,44 @@ export function useRestaurantsLazyQuery(baseOptions?: ApolloReactHooks.LazyQuery
 export type RestaurantsQueryHookResult = ReturnType<typeof useRestaurantsQuery>;
 export type RestaurantsLazyQueryHookResult = ReturnType<typeof useRestaurantsLazyQuery>;
 export type RestaurantsQueryResult = Apollo.QueryResult<RestaurantsQuery, RestaurantsQueryVariables>;
+export const UpdateMealDocument = gql`
+    mutation UpdateMeal($name: String!, $description: String!, $price: Float!, $id: Float!) {
+  updateMeal(
+    options: {name: $name, description: $description, price: $price, id: $id}
+  ) {
+    id
+  }
+}
+    `;
+export type UpdateMealMutationFn = Apollo.MutationFunction<UpdateMealMutation, UpdateMealMutationVariables>;
+
+/**
+ * __useUpdateMealMutation__
+ *
+ * To run a mutation, you first call `useUpdateMealMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateMealMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateMealMutation, { data, loading, error }] = useUpdateMealMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      price: // value for 'price'
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUpdateMealMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateMealMutation, UpdateMealMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useMutation<UpdateMealMutation, UpdateMealMutationVariables>(UpdateMealDocument, options);
+      }
+export type UpdateMealMutationHookResult = ReturnType<typeof useUpdateMealMutation>;
+export type UpdateMealMutationResult = Apollo.MutationResult<UpdateMealMutation>;
+export type UpdateMealMutationOptions = Apollo.BaseMutationOptions<UpdateMealMutation, UpdateMealMutationVariables>;
 export const UpdateOrderDocument = gql`
     mutation UpdateOrder($id: Float!) {
   updateOrder(id: $id) {

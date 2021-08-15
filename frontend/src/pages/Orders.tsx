@@ -170,6 +170,7 @@ export function Orders() {
                 <Th>Order ID</Th>
                 <Th>Meals</Th>
                 <Th>Restaurant</Th>
+                <Th>Total Cost</Th>
                 <Th>Status</Th>
                 <Th>Actions</Th>
               </Tr>
