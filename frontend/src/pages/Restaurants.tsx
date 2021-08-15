@@ -14,7 +14,6 @@ import { AddRestaurantModal } from "../components/AddRestaurantModal";
 import { Card } from "../components/Card";
 import { RestaurantCard } from "../components/RestaurantCard";
 import { useMeQuery, useRestaurantsQuery } from "../generated/graphql";
-import { getIsAuthenticated } from "../utils/isAuthenticated";
 
 export function Restaurants() {
   const { data, loading, error, refetch } = useRestaurantsQuery();

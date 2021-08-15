@@ -1,9 +1,11 @@
 import {
   Box,
   Button,
+  Center,
   chakra,
   Grid,
   HStack,
+  Spinner,
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
@@ -20,7 +22,7 @@ import {
 
 export function Restaurant() {
   const { id }: any = useParams();
-  const { data } = useRestaurantQuery({
+  const { data, loading: restaurantLoading } = useRestaurantQuery({
     variables: { id: parseInt(id) },
   });
   const [placeOrder, { loading }] = usePlaceOrderMutation();
@@ -68,6 +70,18 @@ export function Restaurant() {
 
   if (hasOrdered) {
     return <Redirect to="/orders" />;
+  }
+
+  if (restaurantLoading) {
+    return (
+      <Box p={30} bg={bgValue} h={"calc(100vh - 70px)"}>
+        <Box rounded="md" bg={"gray.900"} h={96}>
+          <Center h="full">
+            <Spinner />
+          </Center>
+        </Box>
+      </Box>
+    );
   }
 
   return (
