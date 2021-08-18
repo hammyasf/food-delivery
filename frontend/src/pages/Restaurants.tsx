@@ -16,7 +16,9 @@ import { RestaurantCard } from "../components/RestaurantCard";
 import { useMeQuery, useRestaurantsQuery } from "../generated/graphql";
 
 export function Restaurants() {
-  const { data, loading, error, refetch } = useRestaurantsQuery();
+  const { data, loading, error, refetch } = useRestaurantsQuery({
+    errorPolicy: "ignore",
+  });
 
   const bgValue = useColorModeValue("#F9FAFB", "gray.600");
 

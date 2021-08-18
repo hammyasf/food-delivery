@@ -1,5 +1,5 @@
 import { CheckIcon } from "@chakra-ui/icons";
-import { Button } from "@chakra-ui/react";
+import { Button, useToast } from "@chakra-ui/react";
 import { getNextStatus, getStatusColor } from "../constants/statusColors";
 import { useUpdateOrderMutation } from "../generated/graphql";
 
@@ -11,6 +11,7 @@ interface Props {
 
 export function OrderTableUpdateButton({ onClick, id, current_status }: Props) {
   const [updateOrder, { loading }] = useUpdateOrderMutation();
+  const toast = useToast();
 
   return (
     <Button
@@ -22,6 +23,13 @@ export function OrderTableUpdateButton({ onClick, id, current_status }: Props) {
       isLoading={loading}
       onClick={async () => {
         await updateOrder({ variables: { id: id } });
+        toast({
+          title: "Order Updated.",
+          description: "We've updated the order for you.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
         if (onClick) {
           onClick();
         }

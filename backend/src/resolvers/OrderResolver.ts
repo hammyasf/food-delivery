@@ -17,8 +17,6 @@ import { MyContext } from "src/types";
 import { isAuth } from "./../middlewares/isAuthMiddleware";
 import { getAuthUser } from "./../helpers/auth";
 import { Order } from "./../entities/Order";
-import { MealsOnOrder } from "./../entities/MealsOnOrder";
-import { Meal } from "./../entities/Meal";
 
 @InputType()
 class OrderMeals {
@@ -61,6 +59,7 @@ export class OrderResolver {
         include: {
           meals: { include: { meal: true } },
           restaurant: true,
+          user: true,
           statuses: { orderBy: { createdAt: "desc" } },
         },
         orderBy: { createdAt: "desc" },
@@ -73,6 +72,7 @@ export class OrderResolver {
       include: {
         meals: { include: { meal: true } },
         restaurant: true,
+        user: true,
         statuses: { orderBy: { createdAt: "desc" } },
       },
       orderBy: { createdAt: "desc" },

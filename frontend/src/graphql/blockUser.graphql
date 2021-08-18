@@ -1,0 +1,6 @@
+mutation BlockUser($userId: Float!, $id: Float!) {
+  blockUser(userId: $userId, id: $id) {
+    id
+    name
+  }
+}

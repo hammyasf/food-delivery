@@ -19,6 +19,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useParams, Link, Redirect } from "react-router-dom";
+import { OrderTableBlockButton } from "../components/OrderTableBlockButton";
 import { OrderTableCancelButton } from "../components/OrderTableCancelButton";
 import { OrderTableUpdateButton } from "../components/OrderTableUpdateButton";
 import { getStatusColor } from "../constants/statusColors";
@@ -33,6 +34,7 @@ export function Orders() {
       page: parseInt(page),
       perPage: 5,
     },
+    errorPolicy: "ignore",
   });
   const { data: currentUser } = useMeQuery();
   const bgColor = useColorModeValue("gray.300", "gray.500");
@@ -140,6 +142,18 @@ export function Orders() {
                     <Td>
                       <OrderTableUpdateButton
                         id={order.id}
+                        onClick={() =>
+                          refetch({ page: parseInt(page), perPage: 5 })
+                        }
+                        //@ts-ignore
+                        current_status={order!.statuses[0]!.status}
+                      />
+                    </Td>
+                  ) : currentUser?.me?.type === "RESTAURANT_OWNER" ? (
+                    <Td>
+                      <OrderTableBlockButton
+                        id={order.restaurant.id}
+                        userId={order.user.id}
                         onClick={() =>
                           refetch({ page: parseInt(page), perPage: 5 })
                         }

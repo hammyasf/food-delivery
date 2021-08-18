@@ -75,12 +75,17 @@ export class RestaurantResolver {
     if (user!.type === "RESTAURANT_OWNER") {
       return prisma.restaurant.findMany({
         where: { userId: user!.id, deleted: false },
-        include: { meals: true },
+        include: { meals: true, blockedUser: true },
       });
     }
     return prisma.restaurant.findMany({
-      include: { meals: true, blockedUser: { where: { userId: user!.id } } },
-      where: { deleted: false },
+      include: {
+        meals: true,
+      },
+      where: {
+        deleted: false,
+        blockedUser: { every: { user: { isNot: { id: user!.id } } } },
+      },
     });
   }
 
@@ -91,7 +96,13 @@ export class RestaurantResolver {
       where: {
         id: id,
       },
-      include: { meals: { where: { deleted: false } } },
+      include: {
+        meals: {
+          where: {
+            deleted: false,
+          },
+        },
+      },
     });
   }
 
@@ -259,6 +270,42 @@ export class RestaurantResolver {
       where: { id: id },
       data: {
         deleted: true,
+      },
+    });
+  }
+
+  @Mutation(() => Restaurant)
+  @UseMiddleware(isAuth)
+  async blockUser(
+    @Ctx() { prisma, payload, res, req }: MyContext,
+    @Arg("id") id: number,
+    @Arg("userId") userId: number
+  ) {
+    const user = await getAuthUser({ context: { prisma, payload, res, req } });
+
+    if (user?.type !== "RESTAURANT_OWNER") {
+      throw new Error("You Need To Be A Restaurant To Block Users.");
+    }
+
+    const r = await prisma.restaurant.findUnique({
+      where: { id: id },
+    });
+
+    if (r?.userId !== user.id) {
+      throw new Error("You cannot edit a restaurant you don't own.");
+    }
+
+    return prisma.restaurant.update({
+      where: { id: id },
+      data: {
+        blockedUser: {
+          connectOrCreate: {
+            where: {
+              userId_restaurantId: { restaurantId: id, userId: userId },
+            },
+            create: { userId: userId },
+          },
+        },
       },
     });
   }

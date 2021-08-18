@@ -33,6 +33,7 @@ export function Restaurant() {
     refetch,
   } = useRestaurantQuery({
     variables: { id: parseInt(id) },
+    errorPolicy: "ignore",
   });
   const [placeOrder, { loading }] = usePlaceOrderMutation();
   const bgValue = useColorModeValue("#F9FAFB", "gray.600");
@@ -75,6 +76,7 @@ export function Restaurant() {
         restaurantId: data!.restaurant!.id,
         total: cartCost,
       },
+      errorPolicy: "ignore",
     });
     setHasOrdered(true);
   }

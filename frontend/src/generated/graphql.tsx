@@ -69,6 +69,7 @@ export type Mutation = {
   addMeal: Meal;
   updateMeal: Meal;
   deleteMeal: Meal;
+  blockUser: Restaurant;
   cancelOrder?: Maybe<Order>;
   updateOrder?: Maybe<Order>;
   placeOrder?: Maybe<Order>;
@@ -111,6 +112,12 @@ export type MutationUpdateMealArgs = {
 
 
 export type MutationDeleteMealArgs = {
+  id: Scalars['Float'];
+};
+
+
+export type MutationBlockUserArgs = {
+  userId: Scalars['Float'];
   id: Scalars['Float'];
 };
 
@@ -258,6 +265,14 @@ export type AddRestaurantMutationVariables = Exact<{
 
 export type AddRestaurantMutation = { __typename?: 'Mutation', addRestaurant: { __typename?: 'Restaurant', id: number } };
 
+export type BlockUserMutationVariables = Exact<{
+  userId: Scalars['Float'];
+  id: Scalars['Float'];
+}>;
+
+
+export type BlockUserMutation = { __typename?: 'Mutation', blockUser: { __typename?: 'Restaurant', id: number, name: string } };
+
 export type CancelOrderMutationVariables = Exact<{
   id: Scalars['Float'];
 }>;
@@ -313,7 +328,7 @@ export type OrdersQueryVariables = Exact<{
 }>;
 
 
-export type OrdersQuery = { __typename?: 'Query', orders?: Maybe<Array<{ __typename?: 'Order', id: number, total: number, createdAt: any, statuses?: Maybe<Array<{ __typename?: 'OrderStatus', status: string, createdAt: any }>>, meals?: Maybe<Array<{ __typename?: 'MealsOnOrder', quantity: number, meal?: Maybe<{ __typename?: 'Meal', name: string, price: number }> }>>, restaurant: { __typename?: 'Restaurant', id: number, name: string, description: string } }>> };
+export type OrdersQuery = { __typename?: 'Query', orders?: Maybe<Array<{ __typename?: 'Order', id: number, total: number, createdAt: any, statuses?: Maybe<Array<{ __typename?: 'OrderStatus', status: string, createdAt: any }>>, meals?: Maybe<Array<{ __typename?: 'MealsOnOrder', quantity: number, meal?: Maybe<{ __typename?: 'Meal', name: string, price: number }> }>>, restaurant: { __typename?: 'Restaurant', id: number, name: string, description: string }, user: { __typename?: 'User', id: number } }>> };
 
 export type PlaceOrderMutationVariables = Exact<{
   meals: Array<Scalars['Float']> | Scalars['Float'];
@@ -444,6 +459,41 @@ export function useAddRestaurantMutation(baseOptions?: ApolloReactHooks.Mutation
 export type AddRestaurantMutationHookResult = ReturnType<typeof useAddRestaurantMutation>;
 export type AddRestaurantMutationResult = Apollo.MutationResult<AddRestaurantMutation>;
 export type AddRestaurantMutationOptions = Apollo.BaseMutationOptions<AddRestaurantMutation, AddRestaurantMutationVariables>;
+export const BlockUserDocument = gql`
+    mutation BlockUser($userId: Float!, $id: Float!) {
+  blockUser(userId: $userId, id: $id) {
+    id
+    name
+  }
+}
+    `;
+export type BlockUserMutationFn = Apollo.MutationFunction<BlockUserMutation, BlockUserMutationVariables>;
+
+/**
+ * __useBlockUserMutation__
+ *
+ * To run a mutation, you first call `useBlockUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useBlockUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [blockUserMutation, { data, loading, error }] = useBlockUserMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useBlockUserMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BlockUserMutation, BlockUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useMutation<BlockUserMutation, BlockUserMutationVariables>(BlockUserDocument, options);
+      }
+export type BlockUserMutationHookResult = ReturnType<typeof useBlockUserMutation>;
+export type BlockUserMutationResult = Apollo.MutationResult<BlockUserMutation>;
+export type BlockUserMutationOptions = Apollo.BaseMutationOptions<BlockUserMutation, BlockUserMutationVariables>;
 export const CancelOrderDocument = gql`
     mutation CancelOrder($id: Float!) {
   cancelOrder(id: $id) {
@@ -766,6 +816,9 @@ export const OrdersDocument = gql`
       id
       name
       description
+    }
+    user {
+      id
     }
   }
 }

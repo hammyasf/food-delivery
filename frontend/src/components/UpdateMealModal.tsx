@@ -14,10 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useState } from "react";
-import {
-  useUpdateMealMutation,
-  useUpdateRestaurantMutation,
-} from "../generated/graphql";
+import { useUpdateMealMutation } from "../generated/graphql";
 
 interface Props {
   isOpen: boolean;

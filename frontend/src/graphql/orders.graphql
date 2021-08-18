@@ -19,5 +19,8 @@ query Orders($page: Float!, $perPage: Float!) {
       name
       description
     }
+    user {
+      id
+    }
   }
 }

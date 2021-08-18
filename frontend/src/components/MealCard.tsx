@@ -10,9 +10,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { DeleteMealModal } from "./DeleteMealModal";
-import { DeleteRestaurantModel } from "./DeleteRestaurantModal";
 import { UpdateMealModal } from "./UpdateMealModal";
-import { UpdateRestaurantModal } from "./UpdateRestaurantModel";
 
 interface Props {
   title: string;

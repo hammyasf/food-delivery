@@ -1,14 +1,15 @@
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Button, useToast } from "@chakra-ui/react";
-import { useCancelOrderMutation } from "../generated/graphql";
+import { useBlockUserMutation } from "../generated/graphql";
 
 interface Props {
   id: number;
+  userId: number;
   onClick?: Function;
 }
 
-export function OrderTableCancelButton({ onClick, id }: Props) {
-  const [cancelOrder, { loading }] = useCancelOrderMutation();
+export function OrderTableBlockButton({ onClick, id, userId }: Props) {
+  const [blockUser, { loading }] = useBlockUserMutation();
   const toast = useToast();
 
   return (
@@ -17,13 +18,13 @@ export function OrderTableCancelButton({ onClick, id }: Props) {
       leftIcon={<DeleteIcon />}
       colorScheme={"red"}
       variant="outline"
-      loadingText="Canceling"
+      loadingText="Blocking"
       isLoading={loading}
       onClick={async () => {
-        await cancelOrder({ variables: { id: id } });
+        await blockUser({ variables: { id: id, userId: userId } });
         toast({
-          title: "Order canceled.",
-          description: "We've canceled the order for you.",
+          title: "User blocked.",
+          description: "We've blocked the user for you.",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -33,7 +34,7 @@ export function OrderTableCancelButton({ onClick, id }: Props) {
         }
       }}
     >
-      Cancel
+      Block User
     </Button>
   );
 }
